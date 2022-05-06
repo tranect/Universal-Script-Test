@@ -1,140 +1,18 @@
-getgenv().plr = game:GetService"Players".LocalPlayer
-getgenv().p = game.Players.LocalPlayer
-getgenv().Players = game:GetService'Players'
-getgenv().TeleportService = game:GetService'TeleportService'
-getgenv().ReplicatedStorage = game:GetService'ReplicatedStorage' 
-getgenv().StarterGui = game:GetService'StarterGui'
-getgenv().TweenService = game:GetService'TweenService'
-getgenv().UserInput = game:GetService'UserInputService'
-getgenv().RunService = game:GetService'RunService'
-getgenv().Lighting = game:GetService'Lighting'
-getgenv().CoreGui = game:GetService'CoreGui'
-getgenv().HttpService = game:GetService'HttpService'
-getgenv().VirtualUser = game:GetService'VirtualUser'
-getgenv().LP = Players.LocalPlayer or Players.PlayerAdded:Wait()
-getgenv().Mouse = LP:GetMouse()
-getgenv().GetChar = function() return LP.Character or LP.CharacterAdded:Wait() end
-GetChar():WaitForChild'Humanoid'
-getgenv().RunCommand = function(Cmd)
-    Cmd = string.lower(Cmd)
-    pcall(function()
-        if Cmd:sub(1, #Prefix) == Prefix then 
-            local Args = string.split(Cmd:sub(#Prefix + 1), " ")
-            local CmdName = GetInit(table.remove(Args, 1))
-            if CmdName and Args then
-                return CmdName(Args)
-            end
-        end
-    end)
-end
-getgenv().SearchPlayers = function(Name)
-    local Inserted = {}
-        for _, v in pairs(game:GetService("Players"):GetPlayers()) do 
-        if string.lower(string.sub(v.Name, 1, string.len(Name))) == string.lower(Name) then 
-            table.insert(Inserted, v);return v
+local Players, RService = game:GetService("Players"), game:GetService("RunService");
+local LocalP, Mouse = Players.LocalPlayer, Players.LocalPlayer:GetMouse();
+local Rm, Index, NIndex, NCall, Caller = getrawmetatable(game), getrawmetatable(game).__index, getrawmetatable(game).__newindex, getrawmetatable(game).__namecall, checkcaller or is_protosmasher_caller
+setreadonly(Rm, false)
+Rm.__newindex = newcclosure(function(self, Meme, Value)
+    if Caller() then return NIndex(self, Meme, Value) end 
+    if tostring(self) == "HumanoidRootPart" or tostring(self) == "BasePart" then 
+        if Meme == "CFrame" and self:IsDescendantOf(LocalP.Character) then 
+            return true
         end
     end
-end
-getgenv().GetPlayer = function(String)
-   local Found = {}
-   local strl = String:lower()
-   if strl == "all" then
-       for i,v in pairs(game.Players:GetPlayers()) do
-           table.insert(Found,v.Name)
-       end
-   elseif strl == "others" then
-       for i,v in pairs(game.Players:GetPlayers()) do
-           if v.Name ~= game.Players.LocalPlayer.Name then
-               table.insert(Found,v.Name)
-           end
-       end   
-elseif strl == "me" then
-       for i,v in pairs(game.Players:GetPlayers()) do
-           if v.Name == game.Players.LocalPlayer.Name then
-               table.insert(Found,v.Name)
-           end
-       end  
-   else
-       for i,v in pairs(game.Players:GetPlayers()) do
-           if v.Name:lower():sub(1, #String) == String:lower() then
-               table.insert(Found,v.Name)
-           end
-       end    
-   end
-   return Found    
-end
-local ScreenGui = Instance.new("ScreenGui")
-local Cmdbar = Instance.new("TextBox")
-local CmdbarARC = Instance.new("ImageLabel")
-
-coroutine.resume(coroutine.create(function()
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.ResetOnSpawn = false
-
-Cmdbar.Name = "Cmdbar"
-Cmdbar.Parent = CmdbarARC
-Cmdbar.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Cmdbar.BackgroundTransparency = 1
-Cmdbar.BorderColor3 = Color3.fromRGB(255, 0, 0)
-Cmdbar.BorderSizePixel = 3
-Cmdbar.Size = UDim2.new(0, 230, 0, 68)
-Cmdbar.SizeConstraint = Enum.SizeConstraint.RelativeYY
-Cmdbar.Font = Enum.Font.Gotham
-Cmdbar.PlaceholderColor3 = Color3.fromRGB(255, 0, 0)
-Cmdbar.Text = ""
-Cmdbar.Font = Enum.Font.SciFi
-Cmdbar.TextColor3 = Color3.fromRGB(0, 0, 0)
-Cmdbar.TextSize = 20.000
-Cmdbar.TextWrapped = true
-Cmdbar.TextXAlignment = Enum.TextXAlignment.Left
-Cmdbar.Visible = false
-
-CmdbarARC.Name = "CmdbarARC"
-CmdbarARC.Parent = ScreenGui
-CmdbarARC.BackgroundColor3 = Color3.fromRGB(255,0,0)
-CmdbarARC.BorderSizePixel = 0
-CmdbarARC.Position = UDim2.new(-0.000640037586, 0, 0.464681, 0)
-CmdbarARC.Size = UDim2.new(0, 230, 0, 68)
-CmdbarARC.Image = "http://www.roblox.com/asset/?id=9245027223"
-CmdbarARC.Visible = false
-end))
-
-local Uis = game:GetService("UserInputService")
-Uis.InputBegan:Connect(function(Key, Typing)
-    if Typing then return end
-    if Key.KeyCode == Enum.KeyCode.Semicolon then
-        CmdbarARC.Visible = true
-        Cmdbar.Visible = true
-        Cmdbar.Text = ""
-        wait()
-        Cmdbar:CaptureFocus()
-        --Cmdbar:TweenSize(UDim2.new(0, 419, 0, 20), "Out", "Quad", 0.1, true)
-    end
+    return NIndex(self, Meme, Value)
 end)
-Cmdbar.FocusLost:Connect(function(Foc)
-    if Foc == true then
-        CmdbarARC.Visible = false
-        Cmdbar.Visible = false
-            RunCommand(Cmdbar.Text)
-    end
-end)
-Uis.InputEnded:Connect(function(Key)
-    if Key.KeyCode.Name == "LeftAlt" then
-        Cmdbar.Visible = false
-    end
-end)
-
-local executed = true
-
-if executed == true then 
-local name = game.Players.LocalPlayer.Name
-    game:GetService("StarterGui"):SetCore("SendNotification",{
-        Title = "Devs Universal Script";
-        Text = ""..name.." Has Executed The Script";
-        Icon = Icon;
-    }) 
-end
-    local LoadingTime = tick();
+setreadonly(Rm, true)
+local LoadingTime = tick();
 local Commands, Prefix = {}, ""
 getgenv().Notify = function(title, text, icon, time)
     game:GetService("StarterGui"):SetCore("SendNotification",{
@@ -143,987 +21,1275 @@ getgenv().Notify = function(title, text, icon, time)
         Icon = "rbxassetid://2541869220";
         Duration = time;
     }) 
+end                
+
+if not syn or not protectgui then
+    getgenv().protectgui = function()end
 end
 
-            getgenv().RunCommand = function(Cmd)
-                Cmd = string.lower(Cmd)
-                pcall(function()
-                    if Cmd:sub(1, #Prefix) == Prefix then 
-                        local Args = string.split(Cmd:sub(#Prefix + 1), " ")
-                        local CmdName = GetInit(table.remove(Args, 1))
-                        if CmdName and Args then
-                            return CmdName(Args)
+local repo = 'https://raw.githubusercontent.com/wally-rblx/LinoriaLib/main/'
+local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
+local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
+local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+--Library = loadstring(game:HttpGet('https://lindseyhost.com/UI/LinoriaLib.lua'))();
+local name = game.Players.LocalPlayer.Name
+local Window = Library:CreateWindow({Title = ""..name.."", Center = true, AutoShow = true})
+
+local Fonts = {1,2,3};
+
+
+local flyBool = false
+local Material1 = {"Plastic", "Neon", "ForceField"}
+local Material2 = {"Plastic", "Neon", "ForceField"}
+local AimParts = {"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}
+local SnapParts = {"Head", "Torso", "Legs"}
+local UIFont = 1
+
+Library:SetWatermark("Devours Universal Script " .. os.date("%x") .. " | v1")
+Library:Notify("Loading UI...")
+Library:Notify("Newest Version | v1")
+Library:Notify("Right Shift to Toggle The GUI")
+Library:Notify(""..LoadingTime.."")
+
+local AimTab = Window:AddTab("Aimbot")
+local VisTab = Window:AddTab("Visuals")
+local RageTab = Window:AddTab("Rage")
+local SettingsTab = Window:AddTab("Settings")
+
+local AimbotTabbox1 = AimTab:AddLeftTabbox("Aimbot")
+local Aim1 = AimbotTabbox1:AddTab("Aimbot")
+Aim1:AddToggle("aim_enabled", {Text = "Enable"}):AddKeyPicker("aim_key", {Text = "Aimbot", Default = "X", Mode = "Hold"})
+Aim1:AddToggle("fov_Circle", {Text = "FOV Circle"}):AddColorPicker("fovColor", { Default = Color3.fromRGB(255, 255, 255) })
+Aim1:AddSlider("aimbot_distance", {Text = "Aimbot Distance", Default = 500, Min = 50, Max = 500, Rounding = 0})
+Aim1:AddSlider("circle_radius", {Text = "Circle Radius", Default = 250, Min = 50, Max = 600, Rounding = 0})
+Aim1:AddDropdown("aim_part", {Text = "Aim Part", Default = 1, Values = AimParts})
+
+local VisTabbox1 = VisTab:AddLeftTabbox("Enemy ESP")
+local Esp1 = VisTabbox1:AddTab("Enemy ESP")
+Esp1:AddToggle("name_tags", {Text = "Nametags"}):AddColorPicker("nameColor", { Default = Color3.fromRGB(255, 255, 255) })
+Esp1:AddToggle("distance", {Text = "Distance"})
+Esp1:AddToggle("boxes", { Text = "Boxes" }):AddColorPicker("bColor", { Default = Color3.fromRGB(255, 255, 255) })
+Esp1:AddToggle("head_dot", {Text = "Head Dot"})
+Esp1:AddToggle("health_bar", {Text = "Healthbar"})
+Esp1:AddToggle("snaplines", {Text = "Snaplines"})
+
+local Esp2 = VisTabbox1:AddTab("ESP Settings")
+Esp2:AddSlider("FontSize", {Text = "Font Size", Default = 14, Min = 8, Max = 24, Rounding = 0})
+Esp2:AddSlider("esp_distance", {Text = "ESP Distance", Default = 500, Min = 0, Max = 500, Rounding = 0})
+Esp2:AddDropdown("SelectedFont", { Text = "ESP Font", Default = 1, Values = Fonts })
+Esp2:AddDropdown("SnaplinePart", {Text = "Snapline Part", Default = 1, Values = SnapParts})
+
+local VisTabbox2 = VisTab:AddLeftTabbox("Local Chams")
+local Chams1 = VisTabbox2:AddTab("Local")
+local Chams2 = VisTabbox2:AddTab("Enemy Chams")
+Chams2:AddToggle("enemy_chams", {Text = "Enemy Chams"}):AddColorPicker("eColor", { Default = Color3.fromRGB(255, 255, 255) })
+Chams2:AddToggle("enemy_chams_ontop", {Text = "Always on Top"})
+Chams2:AddSlider("enemy_chams_transparency", { Text = "Chams Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Chams2:AddSlider("enemy_transparency", { Text = "Enemy Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+
+local VisTabbox3 = VisTab:AddRightTabbox("Crosshair")
+local Cross1 = VisTabbox3:AddTab("Crosshair")
+Cross1:AddToggle("crosshair", {Text = "Enable"}):AddColorPicker("crossColor", { Default = Color3.fromRGB(255, 255, 255) })
+Cross1:AddSlider("cross_length", { Text = "Crosshair Length", Default = 12, Min = 2, Max = 64, Rounding = 0, Suffix = "px"})
+Cross1:AddSlider("cross_thickness", { Text = "Crosshair Thickness", Default = 1, Min = 1, Max = 10, Rounding = 0})
+Cross1:AddSlider("cross_trans", { Text = "Crosshair Transparency", Default = 100, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+
+local VisTabbox4 = VisTab:AddRightTabbox("Render")
+local Rend1 = VisTabbox4:AddTab("Render")
+Rend1:AddToggle("clr_correction", {Text = "Color Correction"}):AddColorPicker("clrCorrct", {Default = Color3.fromRGB(255,255,255) })
+Rend1:AddSlider("brightness", { Text = "Brightness", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Rend1:AddSlider("contrast", { Text = "Contrast", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Rend1:AddSlider("saturation", { Text = "Saturation", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Rend1:AddToggle("bloom", {Text = "Bloom"})
+Rend1:AddSlider("bloom_intensity", { Text = "Intensity", Default = 0, Min = 0, Max = 40, Rounding = 0})
+Rend1:AddSlider("bloom_size", { Text = "Size", Default = 0, Min = 0, Max = 56, Rounding = 0})
+Rend1:AddSlider("bloom_threshold", { Text = "Threshold", Default = 0, Min = 0, Max = 40, Rounding = 0})
+
+local PlayerTabbox1 = RageTab:AddLeftTabbox("Player")
+local Player1 = PlayerTabbox1:AddTab("Player")
+Player1:AddToggle("plr_mod", {Text = "Player Modification"})
+Player1:AddSlider("player_speed", { Text = "Player Speed", Default = 10, Min = 10, Max = 100, Rounding = 0})
+Player1:AddSlider("player_height", { Text = "Player Jump Height", Default = 30, Min = 30, Max = 100, Rounding = 0})
+
+local ExploitsTabbox1 = RageTab:AddRightTabbox("Exploits")
+local Exploits1 = ExploitsTabbox1:AddTab("Exploits")
+Exploits1:AddLabel("Fly"):AddKeyPicker("flyKey", {Text = "Fly", Default = "F"})
+Exploits1:AddLabel("Nolip"):AddKeyPicker("phaseKey", {Text = "Phase Key", Default = "C", Mode = "Toggle"})
+
+
+local function UpdateTheme()
+    Library.BackgroundColor = Options.BackgroundColor.Value;
+    Library.MainColor = Options.MainColor.Value;
+    Library.AccentColor = Options.AccentColor.Value;
+    Library.AccentColorDark = Library:GetDarkerColor(Library.AccentColor);
+    Library.OutlineColor = Options.OutlineColor.Value;
+    Library.FontColor = Options.FontColor.Value;
+
+    Library:UpdateColorsUsingRegistry();
+end;
+
+local function SetDefault()
+    Options.FontColor:SetValueRGB(Color3.fromRGB(255, 255, 255));
+    Options.MainColor:SetValueRGB(Color3.fromRGB(28, 28, 28));
+    Options.BackgroundColor:SetValueRGB(Color3.fromRGB(20, 20, 20));
+    Options.AccentColor:SetValueRGB(Color3.fromRGB(97, 14, 166));
+    Options.OutlineColor:SetValueRGB(Color3.fromRGB(50, 50, 50));
+    Toggles.Rainbow:SetValue(false);
+
+    UpdateTheme();
+end;
+
+local Theme = SettingsTab:AddLeftGroupbox('Theme');
+Theme:AddLabel('Background Color'):AddColorPicker('BackgroundColor', { Default = Library.BackgroundColor });
+Theme:AddLabel('Main Color'):AddColorPicker('MainColor', { Default = Library.MainColor });
+Theme:AddLabel('Accent Color'):AddColorPicker('AccentColor', { Default = Color3.fromRGB(97, 14, 166) });
+Theme:AddToggle('Rainbow', { Text = 'Rainbow Accent Color' });
+Theme:AddLabel('Outline Color'):AddColorPicker('OutlineColor', { Default = Library.OutlineColor });
+Theme:AddLabel('Font Color'):AddColorPicker('FontColor', { Default = Library.FontColor });
+Theme:AddButton('Default Theme', SetDefault);
+Theme:AddToggle('Keybinds', { Text = 'Show Keybinds Menu', Default = true }):OnChanged(function()
+    Library.KeybindFrame.Visible = Toggles.Keybinds.Value;
+end);
+Theme:AddToggle('Watermark', { Text = 'Show Watermark', Default = true }):OnChanged(function()
+    Library:SetWatermarkVisibility(Toggles.Watermark.Value);
+end);
+local function tp()
+    local Player = game.Players.LocalPlayer
+    local TP = game:GetService("TeleportService")
+    TP:Teleport(6055959032, Player)
+end;
+task.spawn(function()
+    while game:GetService('RunService').RenderStepped:Wait() do
+        if Toggles.Rainbow.Value then
+            local Registry = Window.Holder.Visible and Library.Registry or Library.HudRegistry;
+
+            for Idx, Object in next, Registry do
+                for Property, ColorIdx in next, Object.Properties do
+                    if ColorIdx == 'AccentColor' or ColorIdx == 'AccentColorDark' then
+                        local Instance = Object.Instance;
+                        local yPos = Instance.AbsolutePosition.Y;
+
+                        local Mapped = Library:MapValue(yPos, 0, 1080, 0, 0.5) * 1.5;
+                        local Color = Color3.fromHSV((Library.CurrentRainbowHue - Mapped) % 1, 0.8, 1);
+
+                        if ColorIdx == 'AccentColorDark' then
+                            Color = Library:GetDarkerColor(Color);
+                        end;
+
+                        Instance[Property] = Color;
+                    end;
+                end;
+            end;
+        end;
+    end;
+    
+end);
+
+task.spawn(function()
+    while true do
+        wait(1)
+
+        if Library.Unloaded then break end
+    end
+end)
+
+Toggles.Rainbow:OnChanged(function()
+    if not Toggles.Rainbow.Value then
+        UpdateTheme();
+    end;
+end);
+
+Options.BackgroundColor:OnChanged(UpdateTheme);
+Options.MainColor:OnChanged(UpdateTheme);
+Options.AccentColor:OnChanged(UpdateTheme);
+Options.OutlineColor:OnChanged(UpdateTheme);
+Options.FontColor:OnChanged(UpdateTheme);
+
+Library:OnUnload(function()
+    print('Unloaded!')
+    Library.Unloaded = true
+end)
+local function tp()
+    local Player = game.Players.LocalPlayer
+    local TP = game:GetService("TeleportService")
+	game:GetService('TeleportService'):Teleport(game.PlaceId)
+end;
+
+local Extra = SettingsTab:AddRightTabbox("Extras")
+local Feats = Extra:AddTab("Extras")
+Feats:AddButton("Rejoin", tp)
+Feats:AddLabel("discord || Devour#6859")
+
+Theme:AddButton("Unload", function ()
+    Library:Unload()
+end)
+
+Library:Notify("Loaded UI");
+
+-- Features below
+
+local lplr = game.Players.LocalPlayer -- Local Player
+local camera = game:GetService("Workspace").CurrentCamera -- Camera
+local CurrentCamera = game.Workspace.CurrentCamera -- Current Camera
+local worldToViewportPoint = game.Workspace.CurrentCamera.worldToViewportPoint -- View Port Point
+local UIS = game:GetService("UserInputService")
+
+local dwCamera = game.Workspace.CurrentCamera
+local dwRunService = game:GetService("RunService")
+local dwUIS = game:GetService("UserInputService")
+local dwEntities = game:GetService("Players")
+local dwLocalPlayer = dwEntities.LocalPlayer
+local dwMouse = dwLocalPlayer:GetMouse()
+
+local HeadOff = Vector3.new(0, 0.2, 0)
+local LegOff = Vector3.new(0,4.7,0)
+local HeadOff2 = Vector3.new(0, 5.6, 0)
+local SnapLeg = Vector3.new(0, 3.2, 0)
+local HealthOff = Vector3.new(-6,0,0)
+local currentGun = "M4A1"
+local CurrentMap = "Gas Station"
+local InGame = false
+local DeathLoop = false
+
+-- Box ESP
+local BoxESP = function ()
+
+    for i,v in pairs(game.Players:GetChildren()) do
+        local BoxOutline = Drawing.new("Square")
+        BoxOutline.Visible = false
+        BoxOutline.Color = Color3.new(0,0,0)
+        BoxOutline.Thickness = 2
+        BoxOutline.Transparency = 1
+        BoxOutline.Filled = false
+    
+        local Box = Drawing.new("Square")
+        Box.Visible = false
+        Box.Color = Options.bColor.Value
+        Box.Thickness = 1
+        Box.Transparency = 1
+        Box.Filled = false
+    
+        local HealthBarOutline = Drawing.new("Square")
+        HealthBarOutline.Thickness = 3
+        HealthBarOutline.Filled = false
+        HealthBarOutline.Color = Color3.new(0,0,0)
+        HealthBarOutline.Transparency = 1
+        HealthBarOutline.Visible = false
+    
+        local HealthBar = Drawing.new("Square")
+        HealthBar.Thickness = 1
+        HealthBar.Filled = false
+        HealthBar.Transparency = 1
+        HealthBar.Visible = false
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+                    local Vector, onScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+    
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)
+                    local HeadPosition = worldToViewportPoint(CurrentCamera, Head.Position + HeadOff)
+                    local LegPosition = worldToViewportPoint(CurrentCamera, RootPart.Position - LegOff)
+    
+                    Box.Color = Options.bColor.Value
+    
+                    if onScreen and Toggles.boxes.Value == true or onScreen and Toggles.health_bar.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+
+                        BoxOutline.Size = Vector2.new(1650 / RootPosition.Z, HeadPosition.Y - LegPosition.Y)
+                        BoxOutline.Position = Vector2.new(RootPosition.X - BoxOutline.Size.X / 2, RootPosition.Y - BoxOutline.Size.Y / 2)
+                        --BoxOutline.Visible = false
+    
+                        Box.Size = Vector2.new(1650 / RootPosition.Z, HeadPosition.Y - LegPosition.Y)
+                        Box.Position = Vector2.new(RootPosition.X - Box.Size.X / 2, RootPosition.Y - Box.Size.Y / 2)
+                        --Box.Visible = false
+    
+                        HealthBarOutline.Size = Vector2.new(2, HeadPosition.Y - LegPosition.Y)
+                        HealthBarOutline.Position = BoxOutline.Position - Vector2.new(6,0)
+                        --HealthBarOutline.Visible = false
+                    
+                        HealthBar.Size = Vector2.new(2, (HeadPosition.Y - LegPosition.Y) / (workspace[v.Character.Name].Humanoid.MaxHealth / math.clamp(workspace[v.Character.Name].Humanoid.Health, 0, workspace[v.Character.Name].Humanoid.MaxHealth)))
+                        HealthBar.Position = Vector2.new(Box.Position.X - 6, Box.Position.Y + (1 / HealthBar.Size.Y))
+                        HealthBar.Color = Color3.fromRGB(255 - 255 / (workspace[v.Character.Name].Humanoid.MaxHealth / workspace[v.Character.Name].Humanoid.Health), 255 / (workspace[v.Character.Name].Humanoid.MaxHealth / workspace[v.Character.Name].Humanoid.Health), 0)
+                        --HealthBar.Visible = false
+
+                        if texts <= Options.esp_distance.Value then
+
+                            if Toggles.boxes.Value == true then
+                                BoxOutline.Visible = true
+                                Box.Visible = true
+                            else
+                                BoxOutline.Visible = false
+                                Box.Visible = false
+                            end
+    
+                            if Toggles.health_bar.Value == true then
+                                HealthBar.Visible = true
+                                HealthBarOutline.Visible = true
+                            else
+                                HealthBar.Visible = false
+                                HealthBarOutline.Visible = false
+                            end
+
+                        else
+                            BoxOutline.Visible = false
+                            Box.Visible = false
+                            HealthBar.Visible = false
+                            HealthBarOutline.Visible = false
+                        end
+    
+                    else
+                        BoxOutline.Visible = false
+                        Box.Visible = false
+                        HealthBar.Visible = false
+                        HealthBarOutline.Visible = false
+                    end
+                else
+                    BoxOutline.Visible = false
+                    Box.Visible = false
+                    HealthBar.Visible = false
+                    HealthBarOutline.Visible = false
+                end
+            end)
+    end
+    
+    game.Players.PlayerAdded:Connect(function(v)
+        local BoxOutline = Drawing.new("Square")
+        BoxOutline.Visible = false
+        BoxOutline.Color = Color3.new(0,0,0)
+        BoxOutline.Thickness = 2
+        BoxOutline.Transparency = 1
+        BoxOutline.Filled = false
+    
+        local Box = Drawing.new("Square")
+        Box.Visible = false
+        Box.Color = Options.bColor.Value
+        Box.Thickness = 1
+        Box.Transparency = 1
+        Box.Filled = false
+    
+        local HealthBarOutline = Drawing.new("Square")
+        HealthBarOutline.Thickness = 3
+        HealthBarOutline.Filled = false
+        HealthBarOutline.Color = Color3.new(0,0,0)
+        HealthBarOutline.Transparency = 1
+        HealthBarOutline.Visible = false
+    
+        local HealthBar = Drawing.new("Square")
+        HealthBar.Thickness = 1
+        HealthBar.Filled = false
+        HealthBar.Transparency = 1
+        HealthBar.Visible = false
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+                    local Vector, onScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+    
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)
+                    local HeadPosition = worldToViewportPoint(CurrentCamera, Head.Position + HeadOff)
+                    local LegPosition = worldToViewportPoint(CurrentCamera, RootPart.Position - LegOff)
+    
+                    Box.Color = Options.bColor.Value
+    
+                    if onScreen and Toggles.boxes.Value == true or onScreen and Toggles.health_bar.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+
+                        BoxOutline.Size = Vector2.new(1650 / RootPosition.Z, HeadPosition.Y - LegPosition.Y)
+                        BoxOutline.Position = Vector2.new(RootPosition.X - BoxOutline.Size.X / 2, RootPosition.Y - BoxOutline.Size.Y / 2)
+                        --BoxOutline.Visible = false
+    
+                        Box.Size = Vector2.new(1650 / RootPosition.Z, HeadPosition.Y - LegPosition.Y)
+                        Box.Position = Vector2.new(RootPosition.X - Box.Size.X / 2, RootPosition.Y - Box.Size.Y / 2)
+                        --Box.Visible = false
+    
+                        HealthBarOutline.Size = Vector2.new(2, HeadPosition.Y - LegPosition.Y)
+                        HealthBarOutline.Position = BoxOutline.Position - Vector2.new(6,0)
+                        --HealthBarOutline.Visible = false
+                    
+                        HealthBar.Size = Vector2.new(2, (HeadPosition.Y - LegPosition.Y) / (workspace[v.Character.Name].Humanoid.MaxHealth / math.clamp(workspace[v.Character.Name].Humanoid.Health, 0, workspace[v.Character.Name].Humanoid.MaxHealth)))
+                        HealthBar.Position = Vector2.new(Box.Position.X - 6, Box.Position.Y + (1 / HealthBar.Size.Y))
+                        HealthBar.Color = Color3.fromRGB(255 - 255 / (workspace[v.Character.Name].Humanoid.MaxHealth / workspace[v.Character.Name].Humanoid.Health), 255 / (workspace[v.Character.Name].Humanoid.MaxHealth / workspace[v.Character.Name].Humanoid.Health), 0)
+                        --HealthBar.Visible = false
+    
+                        if texts <= Options.esp_distance.Value then
+
+                            if Toggles.boxes.Value == true then
+                                BoxOutline.Visible = true
+                                Box.Visible = true
+                            else
+                                BoxOutline.Visible = false
+                                Box.Visible = false
+                            end
+    
+                            if Toggles.health_bar.Value == true then
+                                HealthBar.Visible = true
+                                HealthBarOutline.Visible = true
+                            else
+                                HealthBar.Visible = false
+                                HealthBarOutline.Visible = false
+                            end
+
+                        else
+                            BoxOutline.Visible = false
+                            Box.Visible = false
+                            HealthBar.Visible = false
+                            HealthBarOutline.Visible = false
+                        end
+    
+                    else
+                        BoxOutline.Visible = false
+                        Box.Visible = false
+                        HealthBar.Visible = false
+                        HealthBarOutline.Visible = false
+                    end
+                else
+                    BoxOutline.Visible = false
+                    Box.Visible = false
+                    HealthBar.Visible = false
+                    HealthBarOutline.Visible = false
+                end
+            end)
+    end)
+
+end
+coroutine.wrap(BoxESP)()
+
+-- Head Dot ESP
+local HeadDotESP = function ()
+    
+    for i,v in pairs(game.Players:GetChildren()) do
+
+        local CircleOutline = Drawing.new("Circle")
+        CircleOutline.Visible = false
+        CircleOutline.Radius = 30
+        CircleOutline.Color = Color3.fromRGB(0, 0 ,0)
+        CircleOutline.Thickness = 3
+        CircleOutline.Filled = false
+        CircleOutline.Transparency = 1
+    
+        local HeadCircle = Drawing.new("Circle")
+        HeadCircle.Visible = false
+        HeadCircle.Radius = 30
+        HeadCircle.Color = Options.bColor.Value
+        HeadCircle.Thickness = 1
+        HeadCircle.Filled = false
+        HeadCircle.Transparency = 1
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+    
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+                    
+                    local Vector, onScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)  
+                    local HeadPosition = worldToViewportPoint(CurrentCamera, Head.Position)
+    
+                    HeadCircle.Color = Options.bColor.Value
+    
+                    if onScreen == true and Toggles.head_dot.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+
+                        HeadCircle.Position = Vector2.new(HeadPosition.X / 1, HeadPosition.Y / 1)
+                        HeadCircle.Radius = 350 / RootPosition.Z
+                        HeadCircle.Visible = true
+    
+                        CircleOutline.Position = Vector2.new(HeadPosition.X / 1, HeadPosition.Y / 1)
+                        CircleOutline.Radius = 350 / RootPosition.Z
+                        CircleOutline.Visible = true
+
+if texts <= Options.esp_distance.Value then
+                            HeadCircle.Visible = true
+                            CircleOutline.Visible = true
+                        else
+                            HeadCircle.Visible = true
+                            CircleOutline.Visible = true
+                        end
+
+                    else
+                        HeadCircle.Visible = false
+                        CircleOutline.Visible = false
+                    end
+    
+                else
+                    HeadCircle.Visible = false
+                    CircleOutline.Visible = false
+                end
+    
+            end)
+            
+    end
+    
+    game.Players.PlayerAdded:Connect(function(v)
+        
+        local CircleOutline = Drawing.new("Circle")
+        CircleOutline.Visible = false
+        CircleOutline.Radius = 30
+        CircleOutline.Color = Color3.fromRGB(0, 0 ,0)
+        CircleOutline.Thickness = 3
+        CircleOutline.Filled = false
+        CircleOutline.Transparency = 1
+    
+        local HeadCircle = Drawing.new("Circle")
+        HeadCircle.Visible = false
+        HeadCircle.Radius = 30
+        HeadCircle.Color = Options.bColor.Value
+        HeadCircle.Thickness = 1
+        HeadCircle.Filled = false
+        HeadCircle.Transparency = 1
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+                    
+                    local Vector, onScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)  
+                    local HeadPosition = worldToViewportPoint(CurrentCamera, Head.Position)
+    
+                    HeadCircle.Color = Options.bColor.Value
+    
+                    if onScreen == true and Toggles.head_dot.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+
+                        HeadCircle.Position = Vector2.new(HeadPosition.X / 1, HeadPosition.Y / 1)
+                        HeadCircle.Radius = 350 / RootPosition.Z
+                        HeadCircle.Visible = true
+    
+                        CircleOutline.Position = Vector2.new(HeadPosition.X / 1, HeadPosition.Y / 1)
+                        CircleOutline.Radius = 350 / RootPosition.Z
+                        CircleOutline.Visible = true
+    
+if texts <= Options.esp_distance.Value then
+                            HeadCircle.Visible = true
+                            CircleOutline.Visible = true
+                        else
+                            HeadCircle.Visible = true
+                            CircleOutline.Visible = true
+                        end
+
+                    else
+                        HeadCircle.Visible = false
+                        CircleOutline.Visible = false
+                    end
+    
+                else
+                    HeadCircle.Visible = false
+                    CircleOutline.Visible = false
+                end
+    
+            end)
+    end)
+
+end
+coroutine.wrap(HeadDotESP)()
+
+-- Nametag ESP
+local NametagESP = function ()
+
+    for i,v in pairs(game.Players:GetChildren()) do
+
+        local NameESP = Drawing.new("Text")
+        NameESP.Visible = false
+        NameESP.Center = true
+        NameESP.Outline = true
+        NameESP.Font = Options.SelectedFont.Value
+        NameESP.Size = Options.FontSize.Value
+        NameESP.Color = Options.nameColor.Value
+        NameESP.Text = v.Name
+    
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+    
+                    local TextVect, onScreen = camera:WorldToViewportPoint(v.Character.Head.Position)
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)  
+                    local HeadPosition = worldToViewportPoint(CurrentCamera, RootPart.Position + HeadOff2)
+    
+                    NameESP.Color = Options.nameColor.Value
+                    NameESP.Size = Options.FontSize.Value
+                    NameESP.Font = Options.SelectedFont.Value
+
+                    if onScreen == true and Toggles.name_tags.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+    
+                        NameESP.Position = Vector2.new(HeadPosition.X, HeadPosition.Y)
+if texts <= Options.esp_distance.Value then
+                            NameESP.Visible = true
+                        else
+                            NameESP.Visible = true
+                        end
+
+                    else
+                        NameESP.Visible = false
+                    end
+    
+                else
+                    NameESP.Visible = false
+                end
+    
+            end)
+            
+    end
+    
+    
+    game.Players.PlayerAdded:Connect(function (v)
+    
+        local NameESP = Drawing.new("Text")
+        NameESP.Visible = false
+        NameESP.Center = true
+        NameESP.Outline = true
+        NameESP.Font = Options.SelectedFont.Value
+        NameESP.Size = Options.FontSize.Value
+        NameESP.Color = Options.nameColor.Value
+        NameESP.Text = v.Name
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+    
+                    local TextVect, onScreen = camera:WorldToViewportPoint(v.Character.Head.Position)
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)  
+                    local HeadPosition = worldToViewportPoint(CurrentCamera, RootPart.Position + HeadOff2)
+    
+                    NameESP.Color = Options.nameColor.Value
+                    NameESP.Size = Options.FontSize.Value
+                    NameESP.Font = Options.SelectedFont.Value
+    
+                    if onScreen == true and Toggles.name_tags.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+    
+                        NameESP.Position = Vector2.new(HeadPosition.X, HeadPosition.Y)
+    
+    
+ if texts <= Options.esp_distance.Value then
+                            NameESP.Visible = true
+                        else
+                            NameESP.Visible = true
+                        end
+
+                    else
+                        NameESP.Visible = false
+                    end
+    
+                else
+                    NameESP.Visible = false
+                end
+    
+            end)
+            
+    
+    end)
+end
+coroutine.wrap(NametagESP)()
+
+-- Distance ESP
+local DistanceESP = function ()
+
+    for i,v in pairs(game.Players:GetChildren()) do
+
+        local DistESP = Drawing.new("Text")
+        DistESP.Visible = false
+        DistESP.Center = true
+        DistESP.Outline = true
+        DistESP.Font = Options.SelectedFont.Value
+        DistESP.Size = Options.FontSize.Value
+        DistESP.Color = Options.nameColor.Value
+        DistESP.Text = ""
+    
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+    
+                    local TextVect, onScreen = camera:WorldToViewportPoint(v.Character.Head.Position)
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)  
+                    local LegPosition = worldToViewportPoint(CurrentCamera, RootPart.Position - LegOff)
+    
+                    DistESP.Font = Options.SelectedFont.Value
+                    DistESP.Size = Options.FontSize.Value
+                    DistESP.Color = Options.nameColor.Value
+
+                    --  or texts < 300 
+
+                    if onScreen == true and Toggles.distance.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+    
+                        DistESP.Position = Vector2.new(LegPosition.X, LegPosition.Y)
+                        
+                        DistESP.Text = tostring("(" .. texts .. ")")
+
+                        if texts <= Options.esp_distance.Value then
+                            DistESP.Visible = true
+                        else
+                            DistESP.Visible = false
+                        end
+
+                    else
+                        DistESP.Visible = false
+                    end
+    
+                else
+                    DistESP.Visible = false
+                end
+    
+            end)
+    end
+    
+    game.Players.PlayerAdded:Connect(function (v)
+    
+        local DistESP = Drawing.new("Text")
+        DistESP.Visible = false
+        DistESP.Center = true
+        DistESP.Outline = true
+        DistESP.Font = Options.SelectedFont.Value
+        DistESP.Size = Options.FontSize.Value
+        DistESP.Color = Options.nameColor.Value
+        DistESP.Text = ""
+    
+            game:GetService("RunService").RenderStepped:Connect(function()
+                if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+    
+                    local TextVect, onScreen = camera:WorldToViewportPoint(v.Character.Head.Position)
+                    local RootPart = v.Character.HumanoidRootPart
+                    local Head = v.Character.Head
+                    local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)  
+                    local LegPosition = worldToViewportPoint(CurrentCamera, RootPart.Position - LegOff)
+    
+                    DistESP.Font = Options.SelectedFont.Value
+                    DistESP.Size = Options.FontSize.Value
+                    DistESP.Color = Options.nameColor.Value
+                    
+                    if onScreen == true and Toggles.distance.Value == true then
+    
+                        local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+    
+                        DistESP.Position = Vector2.new(LegPosition.X, LegPosition.Y)
+                        
+                        DistESP.Text = tostring("(" .. texts .. ")")
+    
+if texts <= Options.esp_distance.Value then
+                            DistESP.Visible = true
+                        else
+                            DistESP.Visible = true
+                        end
+
+                    else
+                        DistESP.Visible = false
+                    end
+    
+                else
+                    DistESP.Visible = false
+                end
+    
+            end)
+    
+    end)
+
+end
+coroutine.wrap(DistanceESP)()
+
+-- Snaplines ESP
+local SnaplineESP = function ()
+
+    for i,v in pairs(game.Players:GetChildren()) do
+
+        local lineSnap = Drawing.new("Line")
+        lineSnap.Visible =  false
+        lineSnap.Thickness = 1
+        lineSnap.Color = Options.bColor.Value
+        
+        game:GetService("RunService").RenderStepped:Connect(function ()
+            if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+                local Vector, onScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+    
+                local RootPart = v.Character.HumanoidRootPart
+                local Head = v.Character.Head
+                local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)   
+                local HeadPosition = worldToViewportPoint(CurrentCamera, Head.Position)
+                local LegPosition = worldToViewportPoint(CurrentCamera, RootPart.Position - SnapLeg)
+    
+                lineSnap.Color = Options.bColor.Value
+    
+                if onScreen and Toggles.snaplines.Value == true then
+    
+                    local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+
+                    if Options.SnaplinePart.Value == "Head" then
+                        lineSnap.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
+                        lineSnap.To = Vector2.new(HeadPosition.X, HeadPosition.Y)
+                    else 
+                        if Options.SnaplinePart.Value == "Torso" then
+                            lineSnap.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
+                            lineSnap.To = Vector2.new(RootPosition.X, RootPosition.Y)
+                        else
+                            if Options.SnaplinePart.Value == "Legs" then
+                                lineSnap.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
+                                lineSnap.To = Vector2.new(LegPosition.X, LegPosition.Y)
+                            end
+                        end
+end
+if texts <= Options.esp_distance.Value then
+                        lineSnap.Visible = true
+                    else
+                        lineSnap.Visible = true
+                    end
+
+                else
+                    lineSnap.Visible = false
+                end
+            else
+                lineSnap.Visible = false
+            end
+        end)
+    end
+    game.Players.PlayerAdded:Connect(function (v)
+    
+        local lineSnap = Drawing.new("Line")
+        lineSnap.Visible =  false
+        lineSnap.Thickness = 1
+        lineSnap.Color = Options.bColor.Value
+        
+        game:GetService("RunService").RenderStepped:Connect(function ()
+            if v.Character ~= nil and v.Character:FindFirstChild("Humanoid") ~= nil and v.Character:FindFirstChild("HumanoidRootPart") ~= nil and v ~= lplr and v.Character.Humanoid.Health > 0 then
+                local Vector, onScreen = camera:worldToViewportPoint(v.Character.HumanoidRootPart.Position)
+    
+                local RootPart = v.Character.HumanoidRootPart
+                local Head = v.Character.Head
+                local RootPosition, RootVis = worldToViewportPoint(CurrentCamera, RootPart.Position)   
+                local HeadPosition = worldToViewportPoint(CurrentCamera, Head.Position)
+                local LegPosition = worldToViewportPoint(CurrentCamera, RootPart.Position - SnapLeg)
+    
+                lineSnap.Color = Options.bColor.Value
+    
+                if onScreen and Toggles.snaplines.Value == true then
+    
+                    local texts = math.ceil((RootPart.Position - game:GetService("Workspace").Camera.CFrame.Position).magnitude)
+
+                    if Options.SnaplinePart.Value == "Head" then
+                        lineSnap.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
+                        lineSnap.To = Vector2.new(HeadPosition.X, HeadPosition.Y)
+                    else 
+                        if Options.SnaplinePart.Value == "Torso" then
+                            lineSnap.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
+                            lineSnap.To = Vector2.new(RootPosition.X, RootPosition.Y)
+                        else
+                            if Options.SnaplinePart.Value == "Legs" then
+                                lineSnap.From = Vector2.new(camera.ViewportSize.X / 2, camera.ViewportSize.Y / 1)
+                                lineSnap.To = Vector2.new(LegPosition.X, LegPosition.Y)
+                            end
+                        end
+                       end 
+if texts <= Options.esp_distance.Value then
+                        lineSnap.Visible = true
+                    else
+                        lineSnap.Visible = true
+                    end
+
+                else
+                    lineSnap.Visible = false
+                end
+            else
+                lineSnap.Visible = false
+            end
+        end)
+    
+    end)
+
+end
+coroutine.wrap(SnaplineESP)()
+
+-- Enemy Chams
+function chams()
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if Toggles.enemy_chams.Value == true then
+            for i,v in pairs(game.Players:GetChildren()) do
+                for i,b in pairs(v.Character:GetChildren()) do
+                    if b:IsA("BasePart") and v.Character.Humanoid.Health > 0 then
+                        if not b:FindFirstChild("BoxHandleAdornment") then
+                            b.Transparency = 0.5
+                            local box = Instance.new("BoxHandleAdornment", b)
+                            box.AlwaysOnTop = Toggles.enemy_chams_ontop.Value
+                            box.Adornee = b
+                            box.Size = b.Size
+                            box.Color3 = Options.eColor.Value
+                            box.ZIndex = 1                                         
+                            box.Transparency = Options.enemy_chams_transparency.Value / 100
+
+                            repeat wait()
+                                box.Color3 = Options.eColor.Value
+                                box.Transparency = Options.enemy_chams_transparency.Value / 100
+                                box.AlwaysOnTop = Toggles.enemy_chams_ontop.Value
+                            until Toggles.enemy_chams.Value == false
                         end
                     end
-                end)
+                end
             end
-                    
-getgenv().GetInit = function(CName)
-    for _, v in next, Commands do 
-        if v.Name == CName or table.find(v.Aliases, CName) then 
-            return v.Function 
-        end 
-    end
+        end
+    end)
 end
+coroutine.wrap(chams)()
+
+function destroyChams()
+    game:GetService("RunService").RenderStepped:Connect(function ()
+           for i,v in pairs(game.Players:GetChildren()) do
+              for i,b in pairs(v.Character:GetChildren()) do
+                  if b:IsA("BasePart") and v.Character.Humanoid.Health == 0 then
+                      if b:FindFirstChild("BoxHandleAdornment") then
+                          b.BoxHandleAdornment:Destroy()
+                      end
+                  end
+              end
+           end
+    end)
+end
+coroutine.wrap(destroyChams)()
+
+-- Crosshair
+local CrosshairDown = Drawing.new("Line") -- y
+local CrosshairCross = Drawing.new("Line") -- x
+
+function makeCrosshair()
+    game:GetService("RunService").RenderStepped:Connect(function ()
+        if Toggles.crosshair.Value == true then
+
+            CrosshairDown.Color = Options.crossColor.Value
+            CrosshairDown.Thickness = Options.cross_thickness.Value
+            CrosshairDown.Transparency = Options.cross_trans.Value / 100
+
+            CrosshairCross.Color = Options.crossColor.Value
+            CrosshairCross.Thickness = Options.cross_thickness.Value
+            CrosshairCross.Transparency = Options.cross_trans.Value / 100
+
+            if Toggles.crosshair.Value == true then
+
+                CrosshairDown.Visible = true
+                CrosshairCross.Visible = true
+            
+                CrosshairCross.From = Vector2.new((CurrentCamera.ViewportSize.X/2)+(Options.cross_length.Value/2+1), CurrentCamera.ViewportSize.Y/2) 
+                CrosshairCross.To = Vector2.new(CurrentCamera.ViewportSize.X/2-(Options.cross_length.Value/2), CurrentCamera.ViewportSize.Y/2) 
+            
+                CrosshairDown.From = Vector2.new(CurrentCamera.ViewportSize.X/2, CurrentCamera.ViewportSize.Y/2+(Options.cross_length.Value/2)) 
+                CrosshairDown.To = Vector2.new(CurrentCamera.ViewportSize.X/2, CurrentCamera.ViewportSize.Y/2-(Options.cross_length.Value/2))
+
+            else
+                CrosshairDown.Visible = false
+                CrosshairCross.Visible = false
+            end
+
+        else
+            CrosshairDown.Visible = false
+            CrosshairCross.Visible = false
+        end
+
+    end)
+end
+coroutine.wrap(makeCrosshair)()
+
+local aiming = false
+local selectKey = Options.aim_key.Value
+local fovcircle = Drawing.new("Circle")
+local peekPressed = false
+local origPos = CFrame.new(0,0,0)
+local changedPos = CFrame.new(0,0,0)
+local deathLoopPos = CFrame.new(0,0,0)
+
+fovcircle.Visible = Toggles.fov_Circle.Value
+fovcircle.Radius = Options.circle_radius.Value
+fovcircle.Color = Options.fovColor.Value
+fovcircle.Thickness = 1
+fovcircle.Filled = false
+fovcircle.Transparency = 1
+
+fovcircle.Position = Vector2.new(CurrentCamera.ViewportSize.X / 2, CurrentCamera.ViewportSize.Y / 2)
+
+UIS.InputBegan:Connect(function(i)
+    if i.KeyCode == Enum.KeyCode[Options.aim_key.Value] then
+        aiming = true
+        print("Aiming")
+        print(Options.aim_key.Value)
+    end
+end)
+
+UIS.InputEnded:Connect(function(i)
+    if i.KeyCode == Enum.KeyCode[Options.aim_key.Value] then
+        aiming = false
+        print("Not Aiming")
+        print(Options.aim_key.Value)
+    end
+end)
+
+dwRunService.RenderStepped:Connect(function()
+    
+    local dist = math.huge -- controls the fov snap stuff
+    local closest_char = nil
+
+    fovcircle.Radius = Options.circle_radius.Value
+    fovcircle.Color = Options.fovColor.Value
+    fovcircle.Visible = Toggles.fov_Circle.Value
+
+    
+    if aiming and Toggles.aim_enabled.Value == true then
+
+        for i,v in next, dwEntities:GetChildren() do 
+
+            if v ~= dwLocalPlayer and
+            v.Character and
+            v.Character:FindFirstChild("HumanoidRootPart") and
+            v.Character:FindFirstChild("Humanoid") and
+            v.Character:FindFirstChild("Humanoid").Health > 0 then
+
+                if v.Team ~= dwLocalPlayer.Team then
+
+                    local char = v.Character
+                    local char_part_pos, is_onscreen = dwCamera:WorldToViewportPoint(char[Options.aim_part.Value].Position)
+
+                    if is_onscreen then
+
+                        local mag = (Vector2.new(dwMouse.X, dwMouse.Y) - Vector2.new(char_part_pos.X, char_part_pos.Y)).Magnitude
+
+                        if mag < dist and mag < Options.circle_radius.Value then
+
+                            dist = mag
+                            closest_char = char
+
+                        end
+                    end
+                end
+            end
+        end
+
+        if closest_char ~= nil and
+        closest_char:FindFirstChild("HumanoidRootPart") and
+        closest_char:FindFirstChild("Humanoid") and
+        closest_char:FindFirstChild("Humanoid").Health > 0 and TweenStatus == nil then
+
+            dwCamera.CFrame = CFrame.new(dwCamera.CFrame.Position, closest_char[Options.aim_part.Value].Position)
+            --mousemoverel(((closest_char[Options.aim_part.Value].Position.X - MouseLocation.X)  / 0.5), ((closest_char[Options.aim_part.Value].Position.Y - MouseLocation.Y) / 0.5))
+        end
+
+    end
+end)
 
 
---///////////////////////////////////////////
-local Players, RService, RStorage, VUser, SGui, TPService = game:GetService("Players"), game:GetService("RunService"), game:GetService("ReplicatedStorage"), game:GetService("VirtualUser"), game:GetService("StarterGui"), game:GetService("TeleportService")
-local Client, Mouse, Camera, CF, INew, Vec3, Vec2, UD2, UD = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Instance.new, Vector3.new, Vector2.new, UDim2.new, UDim.new;
-local Noclip, Blink, Esp, Flying, Noseats, AutoSwap, AutoDie, respawn, autofire, punch, ESPALL, Tracers, Chams = false, false, false, false, false, false, false, false, false, false, false, false, false;
-local Aimbot, Viewing, Camlock, Follow, Triggerbot , Feloop, AutoShoot, Punchbot = false, false, false, false, false, false, false, false;
-local AimbotTarget, ViewTarget, CamlockTarget, EspTarget = nil, nil, nil, nil;
-local Flyspeed, Aimvelocity, Blinkspeed = 5, 10, 2;
-local AimPart, CamPart = "Torso", "Torso";
---/////////////////////////////////////////////
+local playerMods = function ()
+    
+    game:GetService("RunService").RenderStepped:Connect(function()
+
+        if Toggles.plr_mod.Value == true then
+
+            game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Options.player_speed.Value
+            game.Players.LocalPlayer.Character.Humanoid.JumpPower = Options.player_height.Value
+
+        else
+
+        end
+    end)
+
+end
+coroutine.wrap(playerMods)()
+
+local PhaseKey = function ()
+end
+coroutine.wrap(PhaseKey)()
+-- After the features / exploits
+local flyBool = false
+Options.flyKey:OnClick(function()
+
+    if flyBool == false then
+        flyBool = true
+        print(flyBool)
+    else
+        flyBool = false
+        print(flyBool)
+    end
+
+    function flyEnable()
+
+        while flyBool == true do
+
+            repeat wait()
+
+                repeat wait()
+                until game.Players.LocalPlayer and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:findFirstChild("Torso") and game.Players.LocalPlayer.Character:findFirstChild("Humanoid")
+                local mouse = game.Players.LocalPlayer:GetMouse()
+                repeat wait() until mouse
+
+                local plr = game.Players.LocalPlayer
+                local Torso = game.Players.LocalPlayer.Character.Torso
+                local flying = false
+                local deb = true
+                local ctrl = {f = 0, b = 0, l = 0, r = 0}
+                local lastctrl = {f = 0, b = 0, l = 0, r = 0}
+                local maxspeed = 200
+                local speed = 0
+                local WKey = Enum.KeyCode.W
+                local AKey = Enum.KeyCode.A
+                local SKey = Enum.KeyCode.S
+                local DKey = Enum.KeyCode.D
+
+                function Fly()
+                local bg = Instance.new("BodyGyro", Torso)
+                bg.P = 9e4
+                bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
+                bg.cframe = Torso.CFrame
+                local bv = Instance.new("BodyVelocity", Torso)
+                bv.velocity = Vector3.new(0,0.1,0)
+                bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
+                repeat wait()
+                game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+                if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
+                speed = speed+3+(speed/maxspeed)
+                if speed > maxspeed then
+                speed = maxspeed
+                end
+                elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
+                speed = speed-5
+                if speed < 0 then
+                speed = 0
+                end
+                end
+                if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
+                bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+                lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
+                elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
+                bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
+                else
+                bv.velocity = Vector3.new(0,0.1,0)
+                end
+                bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
+                until not flying or value == false
+                ctrl = {f = 0, b = 0, l = 0, r = 0}
+                lastctrl = {f = 0, b = 0, l = 0, r = 0}
+                speed = 0
+bv:Destroy()
+bg:Destroy()
+                game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+                end
+                
+                UIS.InputBegan:Connect(function(i)
+                    Library:Notify("Fly Active")
+                    if i.KeyCode == Enum.KeyCode[Options.flyKey.Value] then
+                        if flying then 
+                            flying = false
+                        else
+                            flying = true
+                            Fly()
+                        end
+                    elseif i.KeyCode == WKey then
+                        ctrl.f = 1
+                    elseif i.KeyCode == SKey then
+                        ctrl.b = -1
+                    elseif i.KeyCode == AKey then
+                        ctrl.l = -1
+                    elseif i.KeyCode == DKey then
+                        ctrl.r = 1
+                    end
+                end)
+                
+                UIS.InputEnded:Connect(function(i)
+                    Library:Notify("Fly Inactive")
+bv:Destroy()
+bg:Destroy()
+                    if i.KeyCode == WKey then
+                        ctrl.f = 0
+                    elseif i.KeyCode == SKey then
+                        ctrl.b = 0
+                    elseif i.KeyCode == AKey then
+                        ctrl.l = 0
+                    elseif i.KeyCode == DKey then
+                        ctrl.r = 0
+                    end
+                end)
+                Fly()
+
+                if flying == false then
+                    game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+                end
+
+            until flyBool== false
+            
+        end
+
+        if flyBool == false then
+            flying = false
+        end
+    end
+    coroutine.wrap(flyEnable)()
+
+end)
 
 
--- [[ functions ]] -- 
-local AimPartTable = {
-    ["torso"] = "Torso";
-    ["head"] = "Head";
-}
+
+local RenderEdit = function ()
+
+    local filter = Instance.new("ColorCorrectionEffect", game:GetService("Workspace").Camera)
+    local bloom = Instance.new("BloomEffect", game:GetService("Workspace").Camera)
+
+    game:GetService("RunService").RenderStepped:Connect(function ()
+        
+        if Toggles.clr_correction.Value == true then
+            filter.Brightness = Options.brightness.Value / 100
+            filter.Contrast = Options.contrast.Value / 100
+            filter.Enabled = true
+            filter.Saturation = Options.saturation.Value / 100
+            filter.TintColor = Options.clrCorrct.Value
+        if Toggles.bloom.Value == true then
+            
+            bloom.Enabled = true
+            bloom.Intensity = Options.bloom_intensity.Value / 100
+            bloom.Size = Options.bloom_size.Value
+            bloom.Threshold = Options.bloom_threshold.Value
+        else
+            bloom.Enabled = false
+        end
+        end
+    end)
+end
+coroutine.wrap(RenderEdit)()
 local KeysTable = {
     ["W"] = false;["A"] = false;
     ["S"] = false;["D"] = false;
     ["LeftControl"] = false;["LeftShift"] = false;
 }
-local function ConfirmCallbacks()
-    wait()
-    SGui:SetCore("ResetButtonCallback", true)
-end
-ConfirmCallbacks()
-getgenv().EspPlayer = function(Dude)
-    local bgui = Instance.new("BillboardGui", Dude.Character.Head)
-    local tlabel = Instance.new("TextLabel", bgui)
-    local UIGradient = Instance.new("UIGradient")
-    
-    bgui.Name = "ESP"
-    bgui.Adornee = part
-    bgui.AlwaysOnTop = true
-    bgui.ExtentsOffset = Vector3.new(0, 3, 0)
-    bgui.Size = UDim2.new(0, 5, 0, 5)
-    bgui.ResetOnSpawn = false
-        
-    tlabel.Name = "espTarget"
-    tlabel.BackgroundColor3 = Color3.fromRGB(0,255,255)
-    tlabel.BackgroundTransparency = 1
-    tlabel.BorderSizePixel = 0
-    tlabel.Position = UDim2.new(0, 0, 0, -30)
-    tlabel.Size = UDim2.new(1, 0, 7, 0)
-    tlabel.Visible = true
-    tlabel.ZIndex = 10
-    tlabel.Font = "ArialBold"
-    tlabel.FontSize = "Size14"
-    RService.RenderStepped:Connect(function()
-        if Dude and Dude.Character and Dude.Character:FindFirstChildOfClass("Humanoid") then 
-            tlabel.Text = Dude.Name.." ["..math.floor(Dude.Character.Humanoid.Health).."/"..math.floor(Dude.Character.Humanoid.MaxHealth).."]".." ["..math.floor(Dude:DistanceFromCharacter(Client.Character.Head.Position)).."]"
-        end
-    end)
-    tlabel.TextStrokeTransparency = 0.1
-UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(55, 55, 55)), ColorSequenceKeypoint.new(0.52, Color3.fromRGB(0,0,0)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(255,255,255))}
-UIGradient.Parent = tlabel
-end
-
-getgenv().togglefly = function()
-    Flying = not Flying
-    Notify("Devour", "Flying: "..tostring(Flying), "", 3)
-    local T = Client.Character:FindFirstChild("HumanoidRootPart") or Client.Character:FindFirstChild("Torso")
-    local BV, BG = INew("BodyVelocity", T), INew("BodyGyro", T)
-    BV.Velocity = Vec3(0, 0.1, 0);BV.MaxForce = Vec3(math.huge, math.huge, math.huge)
-    BG.CFrame = T.CFrame;BG.P = 9e9;BG.MaxTorque = Vec3(9e9, 9e9, 9e9)
-    local FlyPart = INew("Part", workspace)
-    FlyPart.Anchored = true;FlyPart.Size = Vec3(6, 1, 6);FlyPart.Transparency = 1 
-    game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
-    while Flying == true and Client and Client.Character and Client.Character:FindFirstChild("Humanoid") and Client.Character.Humanoid.Health ~= 0 and RService.Heartbeat:Wait() and T do 
-        local Front, Back, Left, Right = 0, 0, 0, 0
-        if KeysTable["W"] == true then 
-            Front = Flyspeed 
-        elseif not KeysTable["W"] == true then
-            Front = 0 
-        end
-        if KeysTable["A"] == true then 
-            Right = -Flyspeed
-        elseif not KeysTable["A"] == true then 
-            Right = 0 
-        end
-        if KeysTable["S"] == true then 
-            Back = -Flyspeed 
-        elseif not KeysTable["S"] == true then 
-            Back = 0
-        end
-        if KeysTable["D"] == true then 
-            Left = Flyspeed
-        elseif not KeysTable["D"] == true then 
-            Left = 0
-        end
-        if tonumber(Front + Back) ~= 0 or tonumber(Left + Right) ~= 0 then 
-            BV.Velocity = ((Camera.CoordinateFrame.lookVector * (Front + Back)) + ((Camera.CoordinateFrame * CF(Left + Right, (Front + Back) * 0.2, 0).p) - Camera.CoordinateFrame.p)) * 50
-        else 
-            BV.Velocity = Vec3(0, 0.1, 0)
-        end
-        BG.CFrame = Camera.CoordinateFrame
-    end
-    FlyPart:Destroy();BG:Remove();BV:Remove()
-game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
-end
-
-Uis.InputBegan:Connect(function(Key)
-    if not (Uis:GetFocusedTextBox()) then
-        if Key.KeyCode == Enum.KeyCode.W then 
-            KeysTable["W"] = true 
-        end 
-        if Key.KeyCode == Enum.KeyCode.A then 
-            KeysTable["A"] = true 
-        end
-        if Key.KeyCode == Enum.KeyCode.S then 
-            KeysTable["S"] = true 
-        end
-        if Key.KeyCode == Enum.KeyCode.D then 
-            KeysTable["D"] = true 
-        end
-        if Key.KeyCode == Enum.KeyCode.F then 
-            if FirstFly == true then 
-                FirstFly = false 
-            end
-            togglefly()
-        end
-        if Key.KeyCode == Enum.KeyCode.X then 
-            Noclip = not Noclip 
-            Notify("Devour", "Noclip: "..tostring(Noclip), "", 3)
-        end
-        if Key.KeyCode == Enum.KeyCode.LeftShift then
-            KeysTable["LeftShift"] = true
-            while Blink == true and KeysTable["LeftShift"] == true and Client and Client.Character and RService.Heartbeat:Wait() do
-                local ClientRF = Client.Character:FindFirstChild("HumanoidRootPart") or Client.Character:FindFirstChild("Torso")
-                local Hum = Client.Character:FindFirstChild("Humanoid")
-                ClientRF.CFrame = ClientRF.CFrame + Vec3(Hum.MoveDirection.X * Blinkspeed, Hum.MoveDirection.Y * Blinkspeed, Hum.MoveDirection.Z * Blinkspeed)
-            end 
-        end
-    end
-end)
-Uis.InputEnded:Connect(function(Key --[[Typing]])
-    if not (Uis:GetFocusedTextBox()) then
-        if Key.KeyCode == Enum.KeyCode.W then 
-            KeysTable["W"] = false 
-        end
-        if Key.KeyCode == Enum.KeyCode.A then 
-            KeysTable["A"] = false 
-        end
-        if Key.KeyCode == Enum.KeyCode.S then 
-            KeysTable["S"] = false 
-        end
-        if Key.KeyCode == Enum.KeyCode.D then 
-            KeysTable["D"] = false
-        end
-        if Key.KeyCode == Enum.KeyCode.LeftShift then
-            KeysTable["LeftShift"] = false
-        end
-    end
-end)
---////Bypass\\\\--
-
-
+local Uis = game:GetService("UserInputService")
 local rm = getrawmetatable(game) or debug.getrawmetatable(game) or getmetatable(game)
-if setreadonly then setreadonly(rm, false) else make_writeable(rm, true) end
-local caller, cscript = checkcaller or is_protosmasher_caller, getcallingscript or get_calling_script;
-local rindex, nindex, ncall, closure = rm.__index, rm.__newindex, rm.__namecall, newcclosure or read_me;
+local Flyspeed, Blinkspeed = 5, 2;
 
-rm.__newindex = closure(function(self, Meme, Val)
-    if caller() then return nindex(self, Meme, Val) end 
-    if game.PlaceId ~= (StreetsID) then 
-        if Meme == "WalkSpeed" then 
-            return 16
-        end
-        if Meme == "JumpPower" then 
-            return 37.5 
-        end
-        if Meme == "HipHeight" then 
-            return 0 
-        end
-        if Meme == "Health" then 
-            return 100 
-        end
-    end
-    if self:IsDescendantOf(Client.Character) and self.Name == "HumanoidRootPart" or self.Name == "Torso" then 
-        if Meme == "CFrame" or Meme == "Position" or Meme == "Anchored" then 
-            return nil 
-        end
-    end
-    return nindex(self, Meme, Val) 
-end)
-rm.__namecall = closure(function(self, ...)
-    local Args, Method = {...}, getnamecallmethod() or get_namecall_method();
-    if Method == "BreakJoints" then 
-        return wait(9e9)
-    end
-    if game.PlaceId ~= (StreetsID) then
-        if Method == "FireServer" and not self.Name == "SayMessageRequest" then
-            if tostring(self.Parent) == "ReplicatedStorage" or self.Name == "lIII" then 
-                return wait(9e9) 
-            end
-            if Args[1] == "hey" then 
-                return wait(9e9) 
-            end
-        end
-        if Method == "FireServer" and self.Name == "Fire" and AimbotTarget ~= nil and Aimbot == true  then
-            return ncall(self, AimbotTarget.Character[AimPart].CFrame + AimbotTarget.Character[AimPart].Velocity/Aimvelocity)
-        end
-    end
-    if game.PlaceId == (StreetsID) then
-        if Method == "FireServer" and Args[1] == "WalkSpeed" or Args[1] == "JumpPower" or Args[1] == "HipHeight" then 
-            return nil 
-        end
-        if Method == "FireServer" and self.Name == "Input" then 
-            if Args[1] == "bv" or Args[1] == "hb" or Args[1] == "ws" then 
-                return wait(9e9)
-            end
-        end
-        if Method == "FireServer" and self.Name == "Input" and AimbotTarget ~= nil and Aimbot == true then 
-            Args[2].mousehit = AimbotTarget.Character[AimPart].CFrame + AimbotTarget.Character[AimPart].Velocity/Aimvelocity 
-            Args[2].velo = math.huge
-            return ncall(self, unpack(Args))
-        end
-    end
-    return ncall(self, unpack(Args))
-end)
+local Players, RService, RStorage, VUser, SGui, TPService = game:GetService("Players"), game:GetService("RunService"), game:GetService("ReplicatedStorage"), game:GetService("VirtualUser"), game:GetService("StarterGui"), game:GetService("TeleportService")
+local Client, Mouse, Camera, CF, INew, Vec3, Vec2, UD2, UD = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Instance.new, Vector3.new, Vector2.new, UDim2.new, UDim.new;
 if setreadonly then setreadonly(rm, true) else make_writeable(rm, false) end
+local Flying, NoClip, NoClipKey = false,false, "c"
 
---////End Of Bypass\\\\--
---/commands
-Commands["Sets your Flyspeed"] = {
-    ["Aliases"] = {"flyspeed", "fs"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            Flyspeed = tonumber(Args[1])
-            Notify("Devour", "Flyspeed: "..tonumber(Flyspeed), "", 3)
-        end
-    end
-}
-Commands["Sets your Chat Command Prefix"] = {
-    ["Aliases"] = {"prefix", "pfix"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            Prefix = Args[1]
-        end
-        Notify("Devour", "Prefix: "..tostring(Prefix), "", 3)
-    end
-}
-Commands["Toggles Fly"] = {
-    ["Aliases"] = {"fly", "togglefly", "f"};
-    ["Function"] = function(Args)
-        togglefly()
-    end
-}
-Commands["Sets your FieldOfView"] = {
-    ["Aliases"] = {"fieldofview", "fov"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            Camera.FieldOfView = tonumber(Args[1])
-        end
-        Notify("Devour", "FieldOfView: "..tonumber(Args[1]), "", 3)
-    end
-}
-Commands["View a Player"] = {
-    ["Aliases"] = {"view", "spy"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            ViewTarget = SearchPlayers(Args[1]);Viewing = true 
-        end
-        Notify("Devour", "You Are Spying On: "..tostring(ViewTarget), "", 3)
-    end
-}
-Commands["UnView Viewed Target"] = {
-    ["Aliases"] = {"unview", "unspy"};
-    ["Function"] = function()
-        ViewTarget = nil;Viewing = false
-        Camera.CameraSubject = Client.Character
-        Notify("Devour", "You Stopped Spying: "..tostring(Viewing), "", 3)
-    end
-}
-Commands["Toggles Blink"] = {
-    ["Aliases"] = {"blink", "blinkspd"};
-    ["Function"] = function(Args)
-        Blink = not Blink 
-        Notify("Devour", "Blink: "..tostring(Blink), "", 3)
-    end
-}
-Commands["Toggles AutoSwap"] = {
-    ["Aliases"] = {"autoswap", "as"};
-    ["Function"] = function(Args)
-        AutoSwap = not AutoSwap 
-        Notify("Devour", "AutoSwap: "..tostring(AutoSwap), "", 3)
-    end
-}
-    Commands["Sets Walkspeed"] = {
-    ["Aliases"] = {"ws", "walkspeed", "speed"};
-    ["Function"] = function(Args)
-getgenv().WalkSpeedValue = tonumber(Args[1]) --set your desired walkspeed here
-local Player = game:service'Players'.LocalPlayer;
-Player.Character.Humanoid:GetPropertyChangedSignal'WalkSpeed':Connect(function()
-Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue
-end)
-Player.Character.Humanoid.WalkSpeed = getgenv().WalkSpeedValue
-        Notify("Devour", "Walkspeed: "..tonumber(Args[1]), "", 3)
-    end
-}
-Commands["Esp a Player"] = {
-    ["Aliases"] = {"esp", "find"};
-    ["Function"] = function(Args)
-        if Args[1] then
-            EspTarget = SearchPlayers(Args[1])
-            if EspTarget then
-                EspPlayer(EspTarget)
-            end
-        end
-        Notify("Devour", "Esp Target: "..tostring(EspTarget), "", 3)
-    end
-}
-Commands["UnEsp Esp'd Player"] = {
-    ["Aliases"] = {"unesp", "unfind"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            local UnEspPlayer;UnEspPlayer = SearchPlayers(Args[1])
-            if UnEspPlayer then 
-                for _, v in next, UnEspPlayer.Character:GetDescendants() do 
-                    if v:IsA("BillboardGui") or v:IsA("TextLabel") then 
-                        v:Destroy() --[[if staircase(s) go brrrRRR]]
-                    end
-                end
-            end
-        end
-    end
-}
-Commands["Sets Camlock Target"] = {
-    ["Aliases"] = {"camlock", "cam", "cl", "cml"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            CamlockTarget = SearchPlayers(Args[1]);Camlock = true
-        end
-        Notify("Devour", "Set Your Camlock Target: "..tostring(CamlockTarget), "", 3)
-    end
-}
-Commands["UnCamlocks Camlocked Target"] = {
-    ["Aliases"] = {"uncamlock", "uncam", "uncl", "uncml"};
-    ["Function"] = function()
-        CamlockTarget = nil;Camlock = false 
-        Notify("Devour", "UnCamlock: "..tostring(Camlock), "", 3)
-    end
-}
-Commands["Sets Aimbot Target"] = {
-    ["Aliases"] = {"aim", "aimlock", "aimbot", "shoot"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            AimbotTarget = SearchPlayers(Args[1]);Aimbot = true
-        end
-        Notify("Devour", "Aimbot Target: "..tostring(AimbotTarget), "", 3)
-    end
-}
-
-Commands["Toggles AutoShoot"] = {
-    ["Aliases"] = {"autoshoot", "autos", "autofire", "as"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            AutoShootTarget = AimbotTarget
-        end
-        Notify("Devour", "AutoFiring At: "..tostring(AimbotTarget), "", 3)
-    end
-}
-Commands["Follow Player"] = {
-    ["Aliases"] = {"follow", "fw", "hunt"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            FollowTarget = SearchPlayers(Args[1]);Follow = true
-        end
-        Notify("Devour", "Follow Target: "..tostring(FollowTarget), "", 3)
-    end
-}
-Commands["Triggerbots A Player"] = {
-    ["Aliases"] = {"triggerbot", "tbot", "tb"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            tbottarget = SearchPlayers(Args[1]);Triggerbot = true
-        end
-        Notify("Devour", "Triggerbotting: "..tostring(tbottarget), "", 3)
-    end
-}
-Commands["Punchbots A Player"] = {
-    ["Aliases"] = {"punchbot", "pbot", "pb"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            pbottarget = SearchPlayers(Args[1]);Punchbot = true
-        end
-        Notify("Devour", "Punchbotting: "..tostring(pbottarget), "", 3)
-    end
-}
-Commands["UnAimbots Aimbotted Target"] = {
-    ["Aliases"] = {"unaim", "uns", "unaimbot", "unshoot"};
-    ["Function"] = function()
-        AimbotTarget = nil;Aimbot = false
-        Notify("Devour", "Stopped Aimbotting: "..tostring(Aimbot), "", 3)
-    end
-}
-Commands["Sets Aimvelocity"] = {
-    ["Aliases"] = {"aimvelocity", "av"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            Aimvelocity = tonumber(Args[1])
-        end
-        Notify("Devour", "Changed Your Aimvelocity: "..tonumber(Args[1]), "", 3)
-    end
-}
-Commands["Toggles Noclip"] = {
-    ["Aliases"] = {"noclip", "nc", "nclip"};
-    ["Function"] = function()
-        Noclip = not Noclip 
-        Notify("Devour", "Noclip: "..tostring(Noclip), "", 3)
-    end
-}
-Commands["Toggles Chams"] = {
-    ["Aliases"] = {"chams", "ch", "c"};
-    ["Function"] = function()
-        Chams = not Chams
-        Notify("Devour", "Chams: "..tostring(Chams), "", 3)
-    end
-}
-Commands["Toggles Tracer"] = {
-    ["Aliases"] = {"tracer", "trace", "tr"};
-    ["Function"] = function()
-        Tracers = not Tracers
-        Notify("Devour", "Tracers: "..tostring(Tracers), "", 3)
-    end
-}
-Commands["Toggles ESPALL"] = {
-    ["Aliases"] = {"espall", "espa", "ea"};
-    ["Function"] = function()
-        ESPALL = not ESPALL 
-        Notify("Devour", "ESPALL: "..tostring(ESPALL), "", 3)
-    end
-}
-Commands["Sets Blinkspeed"] = {
-    ["Aliases"] = {"bs", "blinkspeed"};
-    ["Function"] = function(Args)
-        if Args[1] then 
-            Blinkspeed = tonumber(Args[1])
-        end
-        Notify("Devour", "Changed Your Blinkspeed To: "..tonumber(Args[1]), "", 3)
-    end
-}
-
-Commands["Sets Aimbot Part"] = {
-    ["Aliases"] = {"aimpart", "ap"};
-    ["Function"] = function(Args)
-        AimPart = Args[1]
-        if AimPartTable[Args[1]] then 
-            AimPart = AimPartTable[Args[1]] 
-        end
-        Notify("Devour", "Set Your AimPart To: "..tostring(AimPart), "", 3)
-    end
-}
 RService.Stepped:Connect(function()
-
-    if Camlock == true and CamlockTarget and CamlockTarget.Character and CamlockTarget.Character:FindFirstChild(CamPart) then 
-        Camera.CoordinateFrame = CF(Camera.CoordinateFrame.p, CF(CamlockTarget.Character[CamPart].Position).p)
-    end
-    if Noclip == true then 
-        for i = 1, #p.Character:GetChildren() do
-            local CG = p.Character:GetChildren()[i]
-            if CG:IsA("BasePart") then 
-                CG.CanCollide = false 
-            end
-        end
-        pcall(function()
-            if p and p.Backpack then 
-                p.Backpack:FindFirstChild("Glock").Barrel.CanCollide = false 
-            else
-                p.Character:FindFirstChild("Glock").Barrel.CanCollide = false
-            end
-        end)
-    end
-    if Viewing == true and ViewTarget ~= nil then 
-        Camera.CameraSubject = ViewTarget.Character
-    end
-    if Flying and Client.Character then
-        if p.Character and p.Character:FindFirstChild("Humanoid") then
-            RService.Heartbeat:Wait()
-            p.Character.Humanoid.PlatformStand = false;p.Character.Humanoid.Sit = false
-            p.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
-        end
-    end
-    if p.Character:FindFirstChild("FlyPart") then
-        p.Character:FindFirstChild("FlyPart").CFrame = Client.Character.HumanoidRootPart.CFrame * CF(0, -3.5, 0)
-    end
-end)
-p.Character.Humanoid.Died:Connect(function()
-    if Flying then togglefly() end
-end)
-p.CharacterAdded:Connect(function()
-    repeat wait() until p.Character:FindFirstChild("Humanoid")
-    p.Character.Humanoid.Died:Connect(function()
-        if Flying then togglefly() end
-    end)
-end)
-RService.Stepped:Connect(function()
-    if Follow == true and FollowTarget and FollowTarget.Character and FollowTarget.Character:FindFirstChild("Torso") then
-    local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
-      while wait() do
-        hrp.CFrame = FollowTarget.Character.Torso.CFrame
-    end
-end
-end)
-RService.Stepped:Connect(function()
-if ESPALL == true then
-    local function API_Check()
-        if Drawing == nil then
-            return "No"
-        else
-            return "Yes"
-        end
-    end
-    
-    local Find_Required = API_Check()
-    
-    if Find_Required == "No" then
-        game:GetService("StarterGui"):SetCore("SendNotification",{
-            Title = "Devour";
-            Text = "ESP script could not be loaded because your exploit is unsupported.";
-            Duration = math.huge;
-            Button1 = "OK"
-        })
-    
-        return
-    end
-    
-    local Players = game:GetService("Players")
-    local RunService = game:GetService("RunService")
-    local UserInputService = game:GetService("UserInputService")
-    local Camera = workspace.CurrentCamera
-    
-    local Typing = false
-    
-    _G.SendNotifications = true   -- If set to true then the script would notify you frequently on any changes applied and when loaded / errored. (If a game can detect this, it is recommended to set it to false)
-    _G.DefaultSettings = false   -- If set to true then the ESP script would run with default settings regardless of any changes you made.
-    
-    _G.TeamCheck = false   -- If set to true then the script would create ESP only for the enemy team members.
-    
-    _G.ESPVisible = true   -- If set to true then the ESP will be visible and vice versa.
-    _G.TextColor = Color3.fromRGB(80, 170, 255)   -- The color that the boxes would appear as.
-    _G.TextSize = 14   -- The size of the text.
-    _G.Center = true   -- If set to true then the script would be located at the center of the label.
-    _G.Outline = true   -- If set to true then the text would have an outline.
-    _G.OutlineColor = Color3.fromRGB(0, 0, 0)   -- The outline color of the text.
-    _G.TextTransparency = 0.7   -- The transparency of the text.
-    _G.TextFont = Drawing.Fonts.UI   -- The font of the text. (UI, System, Plex, Monospace) 
-    
-    _G.DisableKey = Enum.KeyCode.Q   -- The key that disables / enables the ESP.
-    
-    local function CreateESP()
-        for _, v in next, Players:GetPlayers() do
-            if v.Name ~= Players.LocalPlayer.Name then
-                local ESP = Drawing.new("Text")
-    
-                RunService.RenderStepped:Connect(function()
-                    if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
-                        local Vector, OnScreen = Camera:WorldToViewportPoint(workspace[v.Name]:WaitForChild("Head", math.huge).Position)
-    
-                        ESP.Size = _G.TextSize
-                        ESP.Center = _G.Center
-                        ESP.Outline = _G.Outline
-                        ESP.OutlineColor = _G.OutlineColor
-                        ESP.Color = _G.TextColor
-                        ESP.Transparency = _G.TextTransparency
-                        ESP.Font = _G.TextFont
-    
-                        if OnScreen == true then
-                            local Part1 = workspace:WaitForChild(v.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position
-                            local Part2 = workspace:WaitForChild(Players.LocalPlayer.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position or 0
-                            local Dist = (Part1 - Part2).Magnitude
-                            ESP.Position = Vector2.new(Vector.X, Vector.Y - 25)
-                            ESP.Text = ("("..tostring(math.floor(tonumber(Dist)))..") "..v.Name.." ["..workspace[v.Name].Humanoid.Health.."]")
-                            if _G.TeamCheck == true then 
-                                if Players.LocalPlayer.Team ~= v.Team then
-                                    ESP.Visible = _G.ESPVisible
-                                else
-                                    ESP.Visible = false
-                                end
-                            else
-                                ESP.Visible = _G.ESPVisible
-                            end
-                        else
-                            ESP.Visible = false
-                        end
-                    else
-                        ESP.Visible = false
-                    end
-                end)
-    
-                Players.PlayerRemoving:Connect(function()
-                    ESP.Visible = false
-                end)
-            end
-        end
-    
-        Players.PlayerAdded:Connect(function(Player)
-            Player.CharacterAdded:Connect(function(v)
-                if v.Name ~= Players.LocalPlayer.Name then 
-                    local ESP = Drawing.new("Text")
-        
-                    RunService.RenderStepped:Connect(function()
-                        if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
-                            local Vector, OnScreen = Camera:WorldToViewportPoint(workspace[v.Name]:WaitForChild("Head", math.huge).Position)
-        
-                            ESP.Size = _G.TextSize
-                            ESP.Center = _G.Center
-                            ESP.Outline = _G.Outline
-                            ESP.OutlineColor = _G.OutlineColor
-                            ESP.Color = _G.TextColor
-                            ESP.Transparency = _G.TextTransparency
-        
-                            if OnScreen == true then
-                                local Part1 = workspace:WaitForChild(v.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position
-                            local Part2 = workspace:WaitForChild(Players.LocalPlayer.Name, math.huge):WaitForChild("HumanoidRootPart", math.huge).Position or 0
-                                local Dist = (Part1 - Part2).Magnitude
-                                ESP.Position = Vector2.new(Vector.X, Vector.Y - 25)
-                                ESP.Text = ("("..tostring(math.floor(tonumber(Dist)))..") "..v.Name.." ["..workspace[v.Name].Humanoid.Health.."]")
-                                if _G.TeamCheck == true then 
-                                    if Players.LocalPlayer.Team ~= Player.Team then
-                                        ESP.Visible = _G.ESPVisible
-                                    else
-                                        ESP.Visible = false
-                                    end
-                                else
-                                    ESP.Visible = _G.ESPVisible
-                                end
-                            else
-                                ESP.Visible = false
-                            end
-                        else
-                            ESP.Visible = false
-                        end
-                    end)
-        
-                    Players.PlayerRemoving:Connect(function()
-                        ESP.Visible = false
-                    end)
-                end
-            end)
-        end)
-    end
-    
-    if _G.DefaultSettings == true then
-        _G.TeamCheck = false
-        _G.ESPVisible = true
-        _G.TextColor = Color3.fromRGB(40, 90, 255)
-        _G.TextSize = 14
-        _G.Center = true
-        _G.Outline = false
-        _G.OutlineColor = Color3.fromRGB(0, 0, 0)
-        _G.DisableKey = Enum.KeyCode.Q
-        _G.TextTransparency = 0.75
-    end
-    
-    UserInputService.TextBoxFocused:Connect(function()
-        Typing = true
-    end)
-    
-    UserInputService.TextBoxFocusReleased:Connect(function()
-        Typing = false
-    end)
-    
-    UserInputService.InputBegan:Connect(function(Input)
-        if Input.KeyCode == _G.DisableKey and Typing == false then
-            _G.ESPVisible = not _G.ESPVisible
-            
-            if _G.SendNotifications == true then
-                game:GetService("StarterGui"):SetCore("SendNotification",{
-                    Title = "Devour";
-                    Text = "The ESP's visibility is now set to "..tostring(_G.ESPVisible)..".";
-                    Duration = 5;
-                })
-            end
-        end
-    end)
-        CreateESP()
-end
-if Tracers == true then
-local function API_Check()
-    if Drawing == nil then
-        return "No"
-    else
-        return "Yes"
-    end
-end
-
-local Find_Required = API_Check()
-
-if Find_Required == "No" then
-    game:GetService("StarterGui"):SetCore("SendNotification",{
-        Title = "Devour";
-        Text = "Tracer script could not be loaded because your exploit is unsupported.";
-        Duration = math.huge;
-        Button1 = "OK"
-    })
-
-    return
-end
-
-local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
-local Camera = game:GetService("Workspace").CurrentCamera
-local UserInputService = game:GetService("UserInputService")
-local TestService = game:GetService("TestService")
-
-local Typing = false
-
-_G.SendNotifications = true   -- If set to true then the script would notify you frequently on any changes applied and when loaded / errored. (If a game can detect this, it is recommended to set it to false)
-_G.DefaultSettings = false   -- If set to true then the tracer script would run with default settings regardless of any changes you made.
-
-_G.TeamCheck = false   -- If set to true then the script would create tracers only for the enemy team members.
-
---[!]-- ONLY ONE OF THESE VALUES SHOULD BE SET TO TRUE TO NOT ERROR THE SCRIPT --[!]--
-
-_G.FromMouse = false   -- If set to true, the tracers will come from the position of your mouse curson on your screen.
-_G.FromCenter = false   -- If set to true, the tracers will come from the center of your screen.
-_G.FromBottom = true   -- If set to true, the tracers will come from the bottom of your screen.
-
-_G.TracersVisible = true   -- If set to true then the tracers will be visible and vice versa.
-_G.TracerColor = Color3.fromRGB(255, 80, 10)   -- The color that the tracers would appear as.
-_G.TracerThickness = 1   -- The thickness of the tracers.
-_G.TracerTransparency = 0.7   -- The transparency of the tracers.
-
-_G.ModeSkipKey = Enum.KeyCode.E   -- The key that changes between modes that indicate where will the tracers come from.
-_G.DisableKey = Enum.KeyCode.Q   -- The key that disables / enables the tracers.
-
-local function CreateTracers()
-    for _, v in next, Players:GetPlayers() do
-        if v.Name ~= game.Players.LocalPlayer.Name then
-            local TracerLine = Drawing.new("Line")
-    
-            RunService.RenderStepped:Connect(function()
-                if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
-                    local HumanoidRootPart_Position, HumanoidRootPart_Size = workspace[v.Name].HumanoidRootPart.CFrame, workspace[v.Name].HumanoidRootPart.Size * 1
-                    local Vector, OnScreen = Camera:WorldToViewportPoint(HumanoidRootPart_Position * CFrame.new(0, -HumanoidRootPart_Size.Y, 0).p)
+    if NoClip == true and LocalP and LocalP.Character and LocalP.Character:FindFirstChild("Humanoid") then  -- fuck errors
+            for i,v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") then
+                    v.CanCollide = false
                     
-                    TracerLine.Thickness = _G.TracerThickness
-                    TracerLine.Transparency = _G.TracerTransparency
-                    TracerLine.Color = _G.TracerColor
-
-                    if _G.FromMouse == true and _G.FromCenter == false and _G.FromBottom == false then
-                        TracerLine.From = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
-                    elseif _G.FromMouse == false and _G.FromCenter == true and _G.FromBottom == false then
-                        TracerLine.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-                    elseif _G.FromMouse == false and _G.FromCenter == false and _G.FromBottom == true then
-                        TracerLine.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-                    end
-
-                    if OnScreen == true  then
-                        TracerLine.To = Vector2.new(Vector.X, Vector.Y)
-                        if _G.TeamCheck == true then 
-                            if Players.LocalPlayer.Team ~= v.Team then
-                                TracerLine.Visible = _G.TracersVisible
-                            else
-                                TracerLine.Visible = false
-                            end
-                        else
-                            TracerLine.Visible = _G.TracersVisible
-                        end
-                    else
-                        TracerLine.Visible = false
-                    end
-                else
-                    TracerLine.Visible = false
                 end
-            end)
-
-            Players.PlayerRemoving:Connect(function()
-                TracerLine.Visible = false
-            end)
-        end
-    end
-
-    Players.PlayerAdded:Connect(function(Player)
-        Player.CharacterAdded:Connect(function(v)
-            if v.Name ~= game.Players.LocalPlayer.Name then
-                local TracerLine = Drawing.new("Line")
-        
-                RunService.RenderStepped:Connect(function()
-                    if workspace:FindFirstChild(v.Name) ~= nil and workspace[v.Name]:FindFirstChild("HumanoidRootPart") ~= nil then
-                        local HumanoidRootPart_Position, HumanoidRootPart_Size = workspace[v.Name].HumanoidRootPart.CFrame, workspace[v.Name].HumanoidRootPart.Size * 1
-                    	local Vector, OnScreen = Camera:WorldToViewportPoint(HumanoidRootPart_Position * CFrame.new(0, -HumanoidRootPart_Size.Y, 0).p)
-                        
-                        TracerLine.Thickness = _G.TracerThickness
-                        TracerLine.Transparency = _G.TracerTransparency
-                        TracerLine.Color = _G.TracerColor
-
-                        if _G.FromMouse == true and _G.FromCenter == false and _G.FromBottom == false then
-                            TracerLine.From = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
-                        elseif _G.FromMouse == false and _G.FromCenter == true and _G.FromBottom == false then
-                            TracerLine.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y / 2)
-                        elseif _G.FromMouse == false and _G.FromCenter == false and _G.FromBottom == true then
-                            TracerLine.From = Vector2.new(Camera.ViewportSize.X / 2, Camera.ViewportSize.Y)
-                        end
-
-                        if OnScreen == true  then
-                            TracerLine.To = Vector2.new(Vector.X, Vector.Y)
-                            if _G.TeamCheck == true then 
-                                if Players.LocalPlayer.Team ~= Player.Team then
-                                    TracerLine.Visible = _G.TracersVisible
-                                else
-                                    TracerLine.Visible = false
-                                end
-                            else
-                                TracerLine.Visible = _G.TracersVisible
-                            end
-                        else
-                            TracerLine.Visible = false
-                        end
-                    else
-                        TracerLine.Visible = false
-                    end
-                end)
-
-                Players.PlayerRemoving:Connect(function()
-                    TracerLine.Visible = false
-                end)
             end
-        end)
+        end
     end)
-end
-
-UserInputService.TextBoxFocused:Connect(function()
-    Typing = true
-end)
-
-UserInputService.TextBoxFocusReleased:Connect(function()
-    Typing = false
-end)
-
-UserInputService.InputBegan:Connect(function(Input)
-    if Input.KeyCode == _G.ModeSkipKey and Typing == false then
-        if _G.FromMouse == true and _G.FromCenter == false and _G.FromBottom == false and _G.TracersVisible == true then
-            _G.FromCenter = false
-            _G.FromBottom = true
-            _G.FromMouse = false
-
-            if _G.SendNotifications == true then
-                game:GetService("StarterGui"):SetCore("SendNotification",{
-                    Title = "Devour";
-                    Text = "Tracers will be now coming from the bottom of your screen (Mode 1)";
-                    Duration = 5;
-                })
-            end
-        elseif _G.FromMouse == false and _G.FromCenter == false and _G.FromBottom == true and _G.TracersVisible == true then
-            _G.FromCenter = true
-            _G.FromBottom = false
-            _G.FromMouse = false
-
-            if _G.SendNotifications == true then
-                game:GetService("StarterGui"):SetCore("SendNotification",{
-                    Title = "Devour";
-                    Text = "Tracers will be now coming from the center of your screen (Mode 2)";
-                    Duration = 5;
-                })
-            end
-        elseif _G.FromMouse == false and _G.FromCenter == true and _G.FromBottom == false and _G.TracersVisible == true then
-            _G.FromCenter = false
-            _G.FromBottom = false
-            _G.FromMouse = true
-
-            if _G.SendNotifications == true then
-                game:GetService("StarterGui"):SetCore("SendNotification",{
-                    Title = "Devour";
-                    Text = "Tracers will be now coming from the position of your mouse cursor on your screen (Mode 3)";
-                    Duration = 5;
-                })
-            end
-        end
-    elseif Input.KeyCode == _G.DisableKey and Typing == false then
-        _G.TracersVisible = not _G.TracersVisible
-        
-        if _G.SendNotifications == true then
-            game:GetService("StarterGui"):SetCore("SendNotification",{
-                Title = "Devour";
-                Text = "The tracers' visibility is now set to "..tostring(_G.TracersVisible)..".";
-                Duration = 5;
-            })
-        end
+Mouse.KeyDown:Connect(function(Key)
+    if Key == NoClipKey then 
+        NoClip = not NoClip
+Library:Notify("Noclip active")
     end
 end)
+Library:Notify("Loading Done")
 
-if _G.DefaultSettings == true then
-    _G.TeamCheck = false
-    _G.FromMouse = false
-    _G.FromCenter = false
-    _G.FromBottom = true
-    _G.TracersVisible = true
-    _G.TracerColor = Color3.fromRGB(40, 90, 255)
-    _G.TracerThickness = 1
-    _G.TracerTransparency = 0.5
-    _G.ModeSkipKey = Enum.KeyCode.E
-    _G.DisableKey = Enum.KeyCode.Q
-end
-    CreateTracers()
-end
-if Chams == true then
-    function CreateSG(name,parent,face)
-        local SurfaceGui = Instance.new("SurfaceGui",parent)
-        SurfaceGui.Parent = parent
-        SurfaceGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-        SurfaceGui.Face = Enum.NormalId[face]
-        SurfaceGui.LightInfluence = 0
-        SurfaceGui.ResetOnSpawn = false
-        SurfaceGui.Name = name
-        SurfaceGui.AlwaysOnTop = true
-        local Frame = Instance.new("Frame",SurfaceGui)
-        Frame.BackgroundColor3 = Color3.fromRGB(85, 170, 255)
-        Frame.Size = UDim2.new(1,0,1,0)
-    end
-    
-    while wait(1) do
-    for i,v in pairs (game:GetService("Players"):GetPlayers()) do
-        if v ~= game:GetService("Players").LocalPlayer and v.Character ~= nil and v.Character:FindFirstChild("Head") and v.Character.Head:FindFirstChild("cham") == nil then
-            for i,v in pairs (v.Character:GetChildren()) do
-            if v:IsA("MeshPart") or v.Name == "Head" then
-            CreateSG("cham",v,"Back")
-            CreateSG("cham",v,"Front")
-            CreateSG("cham",v,"Left")
-            CreateSG("cham",v,"Right")
-            CreateSG("cham",v,"Right")
-            CreateSG("cham",v,"Top")
-            CreateSG("cham",v,"Bottom")
-            end
-            end
-        end
-    end
-    end
-end
-end)
-    local u = game:GetService("UserInputService")
-
-    function getClosest()
-    local cd = math.huge
-    local cp = nil
-    for i,v in pairs(game.Players:GetChildren()) do
-    if v ~= game.Players.LocalPlayer and v.Team ~= game.Players.LocalPlayer.Team then
-    local d = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.Character.HumanoidRootPart.Position).magnitude
-    if distance > cd then
-    cd = d
-    closestplayer = v
-    end
-    end
-    end
-    end
-    u.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton2 then
-    _G.aim = true
-    while wait() do
-    local camera = game.Workspace.CurrentCamera
-    camera.CFrame = CFrame.new(camera.Position, getClosest().Head.Position)
-    end
-    end
-    end)
-    u.InputEnded:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton2 then
-    _G.aim = false
-    end
-    end)
