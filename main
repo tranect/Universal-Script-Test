@@ -1,3 +1,4 @@
+
 local Players, RService = game:GetService("Players"), game:GetService("RunService");
 local LocalP, Mouse = Players.LocalPlayer, Players.LocalPlayer:GetMouse();
 local Rm, Index, NIndex, NCall, Caller = getrawmetatable(game), getrawmetatable(game).__index, getrawmetatable(game).__newindex, getrawmetatable(game).__namecall, checkcaller or is_protosmasher_caller
@@ -21,8 +22,14 @@ getgenv().Notify = function(title, text, icon, time)
         Icon = "rbxassetid://2541869220";
         Duration = time;
     }) 
-end                
-
+end   
+local function plrlist()
+local plrs = game:GetService("Players")
+local OHRP = plrs:GetChildren()
+for i = 1, #OHRP do
+i = #OHRP[i].Name
+end
+end;             
 if not syn or not protectgui then
     getgenv().protectgui = function()end
 end
@@ -33,10 +40,9 @@ local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 --Library = loadstring(game:HttpGet('https://lindseyhost.com/UI/LinoriaLib.lua'))();
 local name = game.Players.LocalPlayer.Name
-local Window = Library:CreateWindow({Title = ""..name.."", Center = true, AutoShow = true})
+local Window = Library:CreateWindow({Title = "dev-hook", Center = true, AutoShow = true})
 
 local Fonts = {1,2,3};
-
 
 local flyBool = false
 local Material1 = {"Plastic", "Neon", "ForceField"}
@@ -81,6 +87,10 @@ Esp2:AddDropdown("SnaplinePart", {Text = "Snapline Part", Default = 1, Values = 
 
 local VisTabbox2 = VisTab:AddLeftTabbox("Local Chams")
 local Chams1 = VisTabbox2:AddTab("Local")
+Chams1:AddToggle("hand_chams", {Text = "Character Chams"}):AddColorPicker("handColor", { Default = Color3.fromRGB(255, 255, 255) })
+Chams1:AddSlider("hand_chams_transparency", { Text = "Hand Chams Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Chams1:AddDropdown("hand_mat", {Text = "Hand Material", Default = 3, Values = Material2})
+
 local Chams2 = VisTabbox2:AddTab("Enemy Chams")
 Chams2:AddToggle("enemy_chams", {Text = "Enemy Chams"}):AddColorPicker("eColor", { Default = Color3.fromRGB(255, 255, 255) })
 Chams2:AddToggle("enemy_chams_ontop", {Text = "Always on Top"})
@@ -114,8 +124,13 @@ Player1:AddSlider("player_height", { Text = "Player Jump Height", Default = 30, 
 local ExploitsTabbox1 = RageTab:AddRightTabbox("Exploits")
 local Exploits1 = ExploitsTabbox1:AddTab("Exploits")
 Exploits1:AddLabel("Fly"):AddKeyPicker("flyKey", {Text = "Fly", Default = "F"})
-Exploits1:AddLabel("Nolip"):AddKeyPicker("phaseKey", {Text = "Phase Key", Default = "C", Mode = "Toggle"})
+Exploits1:AddLabel("Phase"):AddKeyPicker("phaseKey", {Text = "Phase Key", Default = "C", Mode = "Toggle"})
+Exploits1:AddLabel("ClickTP"):AddKeyPicker("tpKey", {Text = "Click TP", Default = "E", Mode = "Hold"})
 
+local FETabbox1 = RageTab:AddRightTabbox("Exploits")
+local FE1 = FETabbox1:AddTab("Fe")
+FE1:AddToggle("Fe_Godmode", {Text = "Godmode(Breaks Script)"})
+FE1:AddToggle("Fe_All", {Text = "FeAll(Fekills The Server)"})
 
 local function UpdateTheme()
     Library.BackgroundColor = Options.BackgroundColor.Value;
@@ -225,6 +240,8 @@ Theme:AddButton("Unload", function ()
 end)
 
 Library:Notify("Loaded UI");
+
+
 
 -- Features below
 
@@ -912,7 +929,136 @@ if texts <= Options.esp_distance.Value then
 
 end
 coroutine.wrap(SnaplineESP)()
+function localChams()
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if Toggles.hand_chams.Value == true then
+            for i,v in pairs(game.Players.LocalPlayer.Character:GetChildren()) do
+                if v:IsA("BasePart") then
+                    
+                    v.BrickColor = BrickColor.new(Options.handColor.Value)
+                    v.Material = Options.hand_mat.Value
+                    v.Transparency = Options.hand_chams_transparency.Value / 100
 
+                end
+                
+            end
+        end
+    end)
+end
+coroutine.wrap(localChams)()
+function FeAll()
+while wait(1) do
+if Toggles.Fe_All.Value == true then
+function GetPlayer(String)
+   local Found = {}
+   local strl = String:lower()
+   if strl == "all" then
+       for i,v in pairs(game.Players:GetPlayers()) do
+           table.insert(Found,v.Name)
+       end
+   elseif strl == "others" then
+       for i,v in pairs(game.Players:GetPlayers()) do
+           if v.Name ~= game.Players.LocalPlayer.Name then
+               table.insert(Found,v.Name)
+           end
+       end   
+elseif strl == "me" then
+       for i,v in pairs(game.Players:GetPlayers()) do
+           if v.Name == game.Players.LocalPlayer.Name then
+               table.insert(Found,v.Name)
+           end
+       end  
+   else
+       for i,v in pairs(game.Players:GetPlayers()) do
+           if v.Name:lower():sub(1, #String) == String:lower() then
+               table.insert(Found,v.Name)
+           end
+       end    
+   end
+   return Found    
+end
+local LP = game.Players.LocalPlayer
+local Char,Pack = LP.Character,LP.Backpack
+local HRP,Hum = Char.HumanoidRootPart,Char.Humanoid
+local LS = LP.PlayerGui:FindFirstChild("LocalScript")
+local plrs = game:GetService("Players")
+local OHRP = plrs:GetChildren()
+local FETO = plrs:FindFirstChildWhichIsA("Part")
+if LS then LS:Destroy() end
+
+for i = 1, #OHRP do
+print(i, OHRP[i].Name)
+end
+
+LP.CharacterAdded:Connect(function(fe)
+fe:WaitForChild("Right Leg"):Destroy()
+fe:WaitForChild("Humanoid")
+fe:WaitForChild("HumanoidRootPart") wait(0.01)
+local CL = fe:WaitForChild("Humanoid"):Clone()
+fe:WaitForChild("Humanoid"):Destroy()
+CL.Parent = fe
+fe.Humanoid:ChangeState(15)
+end)
+
+game:GetService("RunService").RenderStepped:Connect(function()
+for p, GetPlayer in pairs(plrs:GetChildren())do
+if GetPlayer.Name ~= plrs.LocalPlayer.Name then
+    if GetPlayer.Character:FindFirstChild("Humanoid") then
+game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = GetPlayer.Character.Torso.CFrame
+wait()
+end
+end
+end
+end)
+while wait() do
+    for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+            v.Parent = game.Players.LocalPlayer.Character
+        end
+end
+end
+end
+end
+coroutine.wrap(FeAll)()
+function FeGod()
+while wait(5) do
+if Toggles.Fe_Godmode.Value == true then
+local lp = game:GetService "Players".LocalPlayer
+if lp.Character:FindFirstChild "Head" then
+    local char = lp.Character
+    char.Archivable = true
+    local new = char:Clone()
+    new.Parent = workspace
+    lp.Character = new
+    wait(2)
+    local oldhum = char:FindFirstChildWhichIsA "Humanoid"
+    local newhum = oldhum:Clone()
+    newhum.Parent = char
+    newhum.RequiresNeck = false
+    oldhum.Parent = nil
+    wait(2)
+    lp.Character = char
+    new:Destroy()
+    wait(1)
+    newhum:GetPropertyChangedSignal("Health"):Connect(
+        function()
+            if newhum.Health <= 0 then
+                oldhum.Parent = lp.Character
+                wait(1)
+                oldhum:Destroy()
+            end
+        end)
+    workspace.CurrentCamera.CameraSubject = char
+    if char:FindFirstChild "Animate" then
+        char.Animate.Disabled = true
+        wait(.1)
+        char.Animate.Disabled = false
+end
+rs:Disconnect()
+end
+    end
+end
+end
+coroutine.wrap(FeAll)()
 -- Enemy Chams
 function chams()
     game:GetService("RunService").RenderStepped:Connect(function()
@@ -929,7 +1075,8 @@ function chams()
                             box.Color3 = Options.eColor.Value
                             box.ZIndex = 1                                         
                             box.Transparency = Options.enemy_chams_transparency.Value / 100
-
+if game.Players.LocalPlayer.Character:FindFirstChild("BoxHandleAdornment") then
+box:Destroy()
                             repeat wait()
                                 box.Color3 = Options.eColor.Value
                                 box.Transparency = Options.enemy_chams_transparency.Value / 100
@@ -940,21 +1087,24 @@ function chams()
                 end
             end
         end
+end
     end)
 end
 coroutine.wrap(chams)()
 
 function destroyChams()
     game:GetService("RunService").RenderStepped:Connect(function ()
+        if Toggles.enemy_chams.Value == false then
            for i,v in pairs(game.Players:GetChildren()) do
               for i,b in pairs(v.Character:GetChildren()) do
-                  if b:IsA("BasePart") and v.Character.Humanoid.Health == 0 then
+                  if b:IsA("BasePart") then
                       if b:FindFirstChild("BoxHandleAdornment") then
                           b.BoxHandleAdornment:Destroy()
                       end
                   end
               end
            end
+end
     end)
 end
 coroutine.wrap(destroyChams)()
@@ -962,6 +1112,7 @@ coroutine.wrap(destroyChams)()
 -- Crosshair
 local CrosshairDown = Drawing.new("Line") -- y
 local CrosshairCross = Drawing.new("Line") -- x
+local UserInputService = game:GetService("UserInputService")
 
 function makeCrosshair()
     game:GetService("RunService").RenderStepped:Connect(function ()
@@ -980,11 +1131,11 @@ function makeCrosshair()
                 CrosshairDown.Visible = true
                 CrosshairCross.Visible = true
             
-                CrosshairCross.From = Vector2.new((CurrentCamera.ViewportSize.X/2)+(Options.cross_length.Value/2+1), CurrentCamera.ViewportSize.Y/2) 
-                CrosshairCross.To = Vector2.new(CurrentCamera.ViewportSize.X/2-(Options.cross_length.Value/2), CurrentCamera.ViewportSize.Y/2) 
-            
-                CrosshairDown.From = Vector2.new(CurrentCamera.ViewportSize.X/2, CurrentCamera.ViewportSize.Y/2+(Options.cross_length.Value/2)) 
-                CrosshairDown.To = Vector2.new(CurrentCamera.ViewportSize.X/2, CurrentCamera.ViewportSize.Y/2-(Options.cross_length.Value/2))
+                CrosshairCross.From = Vector2.new(UserInputService:GetMouseLocation().X+(Options.cross_length.Value/2), UserInputService:GetMouseLocation().Y) 
+                CrosshairCross.To = Vector2.new(UserInputService:GetMouseLocation().X-(Options.cross_length.Value/2), UserInputService:GetMouseLocation().Y)
+
+                CrosshairDown.From = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y+(Options.cross_length.Value/2)) 
+                CrosshairDown.To = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y-(Options.cross_length.Value/2))
 
             else
                 CrosshairDown.Visible = false
@@ -1015,7 +1166,7 @@ fovcircle.Thickness = 1
 fovcircle.Filled = false
 fovcircle.Transparency = 1
 
-fovcircle.Position = Vector2.new(CurrentCamera.ViewportSize.X / 2, CurrentCamera.ViewportSize.Y / 2)
+fovcircle.Position = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
 
 UIS.InputBegan:Connect(function(i)
     if i.KeyCode == Enum.KeyCode[Options.aim_key.Value] then
@@ -1106,135 +1257,147 @@ coroutine.wrap(playerMods)()
 local PhaseKey = function ()
 end
 coroutine.wrap(PhaseKey)()
--- After the features / exploits
-local flyBool = false
-Options.flyKey:OnClick(function()
 
-    if flyBool == false then
-        flyBool = true
-        print(flyBool)
-    else
-        flyBool = false
-        print(flyBool)
-    end
 
-    function flyEnable()
-
-        while flyBool == true do
-
-            repeat wait()
-
-                repeat wait()
-                until game.Players.LocalPlayer and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:findFirstChild("Torso") and game.Players.LocalPlayer.Character:findFirstChild("Humanoid")
-                local mouse = game.Players.LocalPlayer:GetMouse()
-                repeat wait() until mouse
-
-                local plr = game.Players.LocalPlayer
-                local Torso = game.Players.LocalPlayer.Character.Torso
-                local flying = false
-                local deb = true
-                local ctrl = {f = 0, b = 0, l = 0, r = 0}
-                local lastctrl = {f = 0, b = 0, l = 0, r = 0}
-                local maxspeed = 200
-                local speed = 0
+local Player = game:GetService("Players").LocalPlayer
+local Mouse = Player:GetMouse()
+local HumanoidRootPart = Player.Character:WaitForChild("HumanoidRootPart")
+local Humanoid = Player.Character:WaitForChild("Humanoid")
+local Flying = false
+local Control = {f = 0, b = 0, l = 0, r = 0} 
+local LastControl = {f = 0, b = 0, l = 0, r = 0} 
+local MaxSpeed = 50 
+local Speed = 10    
+local Camera = workspace.CurrentCamera
                 local WKey = Enum.KeyCode.W
                 local AKey = Enum.KeyCode.A
                 local SKey = Enum.KeyCode.S
                 local DKey = Enum.KeyCode.D
 
-                function Fly()
-                local bg = Instance.new("BodyGyro", Torso)
-                bg.P = 9e4
-                bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-                bg.cframe = Torso.CFrame
-                local bv = Instance.new("BodyVelocity", Torso)
-                bv.velocity = Vector3.new(0,0.1,0)
-                bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
-                repeat wait()
-                game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
-                if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
-                speed = speed+3+(speed/maxspeed)
-                if speed > maxspeed then
-                speed = maxspeed
-                end
-                elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
-                speed = speed-5
-                if speed < 0 then
-                speed = 0
-                end
-                end
-                if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-                bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
-                lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
-                elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-                bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
-                else
-                bv.velocity = Vector3.new(0,0.1,0)
-                end
-                bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
-                until not flying or value == false
-                ctrl = {f = 0, b = 0, l = 0, r = 0}
-                lastctrl = {f = 0, b = 0, l = 0, r = 0}
-                speed = 0
-bv:Destroy()
-bg:Destroy()
-                game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
-                end
+if Player:FindFirstChildOfClass("PlayerGui"):FindFirstChild("DConsole_FLY_SCRIPT") then
+    wait(1)
+    Player:FindFirstChildOfClass("PlayerGui"):FindFirstChild("DConsole_FLY_SCRIPT"):remove()
+    if Player.Character.HumanoidRootPart:FindFirstChild("BodyGyro") then
+    Player.Character.HumanoidRootPart:FindFirstChild("BodyGyro"):Destroy()
+    end
+if Player.Character.HumanoidRootPart:FindFirstChild("BodyVelocity") then
+    Player.Character.HumanoidRootPart:FindFirstChild("BodyVelocity"):Destroy()
+end
+end
+
+if Player.Character:FindFirstChild("Humanoid").Health == 0 then
+    wait(1)
+    script:Destroy()
+    return
+end
+
+Instance.new("StringValue",script).Name = "DO_NOT_REENABLE"			
+
+script.Parent = Player:FindFirstChild("PlayerGui")
+script.Name = "DConsole_FLY_SCRIPT"
+
+function Fly() 
+    local Gyro = Instance.new("BodyGyro", HumanoidRootPart) 
+    Gyro.P = 9e4 
+    Gyro.maxTorque = Vector3.new(9e9, 9e9, 9e9) 
+    Gyro.cframe = HumanoidRootPart.CFrame 
+    
+    local Velocity = Instance.new("BodyVelocity", HumanoidRootPart) 
+    Velocity.velocity = Vector3.new(0,0.1,0) 
+    Velocity.maxForce = Vector3.new(9e9, 9e9, 9e9) 
+    
+    repeat
+        wait() 
+        
+        Humanoid.PlatformStand = true 
+        
+        if Control.l + Control.r + Control.f + Control.b > 0 then
+
+        else
+
+        end
+        
+        if Control.l + Control.r ~= 0 or Control.f + Control.b ~= 0 then 
+        
+            Speed = Speed+.5+(Speed/MaxSpeed) 
+            
+            if Speed > MaxSpeed then 
+                Speed = MaxSpeed 
+            end 
+        elseif not (Control.l + Control.r ~= 0 or Control.f + Control.b ~= 0) and Speed ~= 0 then 
+            Speed = Speed-1 
+            if Speed < 0 then 
+                Speed = 0
+            end 
+        end 
+            
+        if (Control.l + Control.r) ~= 0 or (Control.f + Control.b) ~= 0 then 
+        
+            Velocity.velocity = 
+                ((Camera.CoordinateFrame.lookVector * (Control.f + Control.b)) +
+                ((Camera.CoordinateFrame * CFrame.new(Control.l + Control.r,(Control.f + Control.b) * 0.2, 0).p) - --yuck
+                Camera.CoordinateFrame.p))*Speed
                 
+            LastControl = {f = Control.f, b = Control.b, l = Control.l, r = Control.r}
+            
+        elseif (Control.l + Control.r) == 0 and (Control.f + Control.b) == 0 and Speed ~= 0 then 
+        
+            Velocity.velocity = 
+                ((Camera.CoordinateFrame.lookVector * (LastControl.f + LastControl.b)) +
+                ((Camera.CoordinateFrame * CFrame.new(LastControl.l + LastControl.r, (LastControl.f + LastControl.b) * 0.2, 0).p) - --also yuck
+                Camera.CoordinateFrame.p))*Speed 
+                
+        else 
+            Velocity.velocity = Vector3.new(0,0.1,0) 
+        end
+        
+        Gyro.cframe = Camera.CoordinateFrame * CFrame.Angles(-math.rad((Control.f+Control.b)*50*Speed/MaxSpeed),0,0) 
+        
+    until not Flying or not script.Parent
+    
+    Control = {f = 0, b = 0, l = 0, r = 0} 
+    LastControl = {f = 0, b = 0, l = 0, r = 0} 
+    Speed = 0
+    Gyro:Destroy()
+    Velocity:Destroy()
+    Humanoid.PlatformStand = false 
+    
+end
                 UIS.InputBegan:Connect(function(i)
-                    Library:Notify("Fly Active")
                     if i.KeyCode == Enum.KeyCode[Options.flyKey.Value] then
-                        if flying then 
-                            flying = false
-                        else
-                            flying = true
-                            Fly()
-                        end
+        Flying = not Flying
+        if Flying then
+            Fly()
+        end
                     elseif i.KeyCode == WKey then
-                        ctrl.f = 1
+                        Control.f = 1 
                     elseif i.KeyCode == SKey then
-                        ctrl.b = -1
+                        Control.b = -1 
                     elseif i.KeyCode == AKey then
-                        ctrl.l = -1
+                        Control.l = -1 
                     elseif i.KeyCode == DKey then
-                        ctrl.r = 1
+                        Control.r = 1 
                     end
                 end)
                 
                 UIS.InputEnded:Connect(function(i)
-                    Library:Notify("Fly Inactive")
-bv:Destroy()
-bg:Destroy()
                     if i.KeyCode == WKey then
-                        ctrl.f = 0
+                        Control.f = 0 
                     elseif i.KeyCode == SKey then
-                        ctrl.b = 0
+                        Control.b = 0
                     elseif i.KeyCode == AKey then
-                        ctrl.l = 0
+                        Control.l = 0 
                     elseif i.KeyCode == DKey then
-                        ctrl.r = 0
+                        Control.r = 0 
                     end
                 end)
                 Fly()
-
-                if flying == false then
-                    game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
-                end
-
-            until flyBool== false
-            
-        end
-
-        if flyBool == false then
-            flying = false
-        end
-    end
-    coroutine.wrap(flyEnable)()
-
-end)
-
-
-
+if Flying then
+Library:Notify("Flying")
+end
+if not Flying then
+Library:Notify("Not Flying")
+end
 local RenderEdit = function ()
 
     local filter = Instance.new("ColorCorrectionEffect", game:GetService("Workspace").Camera)
@@ -1273,7 +1436,7 @@ local Flyspeed, Blinkspeed = 5, 2;
 local Players, RService, RStorage, VUser, SGui, TPService = game:GetService("Players"), game:GetService("RunService"), game:GetService("ReplicatedStorage"), game:GetService("VirtualUser"), game:GetService("StarterGui"), game:GetService("TeleportService")
 local Client, Mouse, Camera, CF, INew, Vec3, Vec2, UD2, UD = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Instance.new, Vector3.new, Vector2.new, UDim2.new, UDim.new;
 if setreadonly then setreadonly(rm, true) else make_writeable(rm, false) end
-local Flying, NoClip, NoClipKey = false,false, "c"
+local Flying, NoClip = false,false
 
 RService.Stepped:Connect(function()
     if NoClip == true and LocalP and LocalP.Character and LocalP.Character:FindFirstChild("Humanoid") then  -- fuck errors
@@ -1285,11 +1448,18 @@ RService.Stepped:Connect(function()
             end
         end
     end)
-Mouse.KeyDown:Connect(function(Key)
-    if Key == NoClipKey then 
+                UIS.InputBegan:Connect(function(i)
+                    if i.KeyCode == Enum.KeyCode[Options.phaseKey.Value] then
         NoClip = not NoClip
 Library:Notify("Noclip active")
     end
 end)
 Library:Notify("Loading Done")
+local Plr = game:GetService("Players").LocalPlayer
+local Mouse = Plr:GetMouse()
 
+Mouse.Button1Down:connect(function()
+if not game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode[Options.tpKey.Value]) then return end --You can change the "LeftControl" to another hotkey
+if not Mouse.Target then return end
+Plr.Character:MoveTo(Mouse.Hit.p)
+end)
