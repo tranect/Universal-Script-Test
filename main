@@ -42,6 +42,7 @@ local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 local name = game.Players.LocalPlayer.Name
 local Window = Library:CreateWindow({Title = "dev-hook", Center = true, AutoShow = true})
 
+
 local Fonts = {1,2,3};
 
 local flyBool = false
@@ -57,9 +58,9 @@ Library:Notify("Newest Version | v1")
 Library:Notify("Right Shift to Toggle The GUI")
 Library:Notify(""..LoadingTime.."")
 
-local AimTab = Window:AddTab("Aimbot")
+local AimTab = Window:AddTab("Combat")
 local VisTab = Window:AddTab("Visuals")
-local RageTab = Window:AddTab("Rage")
+local RageTab = Window:AddTab("Exploits")
 local SettingsTab = Window:AddTab("Settings")
 
 local AimbotTabbox1 = AimTab:AddLeftTabbox("Aimbot")
@@ -1166,7 +1167,7 @@ fovcircle.Thickness = 1
 fovcircle.Filled = false
 fovcircle.Transparency = 1
 
-fovcircle.Position = Vector2.new(UserInputService:GetMouseLocation().X, UserInputService:GetMouseLocation().Y)
+fovcircle.Position = Vector2.new(CurrentCamera.ViewportSize.X / 2, CurrentCamera.ViewportSize.Y / 2)
 
 UIS.InputBegan:Connect(function(i)
     if i.KeyCode == Enum.KeyCode[Options.aim_key.Value] then
@@ -1235,7 +1236,6 @@ dwRunService.RenderStepped:Connect(function()
 
     end
 end)
-
 
 local playerMods = function ()
     
@@ -1463,3 +1463,34 @@ if not game:GetService("UserInputService"):IsKeyDown(Enum.KeyCode[Options.tpKey.
 if not Mouse.Target then return end
 Plr.Character:MoveTo(Mouse.Hit.p)
 end)
+
+    local bgui = Instance.new("BillboardGui", game.Players.LocalPlayer.Character.Head)
+    local tlabel = Instance.new("TextLabel", bgui)
+    
+    bgui.Name = "ESP"
+    bgui.Adornee = part
+    bgui.AlwaysOnTop = true
+    bgui.ExtentsOffset = Vector3.new(0, 3, 0)
+    bgui.Size = UDim2.new(0, 5, 0, 5)
+        
+    tlabel.Name = "espTarget"
+    tlabel.BackgroundColor3 = Color3.fromRGB(0,255,255)
+    tlabel.BackgroundTransparency = 1
+    tlabel.BorderSizePixel = 0
+    tlabel.Position = UDim2.new(0, 0, 0, -30)
+    tlabel.Size = UDim2.new(1, 0, 7, 0)
+    tlabel.Visible = true
+    tlabel.ZIndex = 10
+    tlabel.Font = "Code"
+    tlabel.FontSize = "Size14"
+    tlabel.TextSize = 23.000
+        if game.Players and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then 
+            text = "dev-hook"
+while wait() do
+for i = 1, #text do
+	tlabel.Text = string.sub(text,1,i)
+		wait(0.4)
+	end
+end	
+
+        end
