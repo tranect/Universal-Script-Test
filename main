@@ -1205,7 +1205,6 @@ dwRunService.RenderStepped:Connect(function()
             v.Character:FindFirstChild("Humanoid") and
             v.Character:FindFirstChild("Humanoid").Health > 0 then
 
-                if v.Team ~= dwLocalPlayer.Team then
 
                     local char = v.Character
                     local char_part_pos, is_onscreen = dwCamera:WorldToViewportPoint(char[Options.aim_part.Value].Position)
@@ -1223,7 +1222,6 @@ dwRunService.RenderStepped:Connect(function()
                     end
                 end
             end
-        end
 
         if closest_char ~= nil and
         closest_char:FindFirstChild("HumanoidRootPart") and
