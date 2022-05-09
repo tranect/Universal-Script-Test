@@ -178,6 +178,7 @@ local Player1 = PlayerTabbox1:AddTab("Player")
 Player1:AddToggle("plr_mod", {Text = "Player Modification"})
 Player1:AddSlider("player_speed", { Text = "Player Speed", Default = 10, Min = 10, Max = 100, Rounding = 0})
 Player1:AddSlider("player_height", { Text = "Player Jump Height", Default = 30, Min = 30, Max = 100, Rounding = 0})
+Player1:AddSlider("player_hipheight", { Text = "Players Hip Height", Default = 0, Min = 0, Max = 50, Rounding = 0})
 
 local ExploitsTabbox1 = RageTab:AddRightTabbox("Exploits")
 local Exploits1 = ExploitsTabbox1:AddTab("Exploits")
@@ -191,6 +192,7 @@ local FE1 = FETabbox1:AddTab("Fe")
 FE1:AddToggle("Fe_Godmode", {Text = "Godmode(Breaks Script)"})
 FE1:AddToggle("Fe_All", {Text = "FeAll(Fekills The Server)"})
 FE1:AddToggle("Fe_Dance", {Text = "Fe Dance(very aids)"})
+FE1:AddToggle("Fe_Headless", {Text = "Fe Headless"})
 
 local function UpdateTheme()
     Library.BackgroundColor = Options.BackgroundColor.Value;
@@ -1003,7 +1005,6 @@ local lighting = game.Lighting
             lighting:FindFirstChildOfClass("SunRaysEffect"):Remove()
         end
 
-        local sunray = Instance.new("SunRaysEffect", lighting)
         local sky = lighting.Sky
         sky.SkyboxBk = "http://www.roblox.com/asset/?id=149397692"
         sky.SkyboxDn = "http://www.roblox.com/asset/?id=149397686"
@@ -1032,7 +1033,15 @@ game:GetService('RunService').RenderStepped:connect(function()
     end)
 
 local lighting = game.Lighting
-local sunray = Instance.new("SunRaysEffect", lighting)
+        if lighting:FindFirstChild("ColorCorrection") then
+            lighting:FindFirstChild("ColorCorrection"):Remove()
+        end
+        if lighting:FindFirstChild("Correction") then
+            lighting:FindFirstChild("Correction"):Remove()
+        end
+        if lighting:FindFirstChildOfClass("SunRaysEffect") then
+            lighting:FindFirstChildOfClass("SunRaysEffect"):Remove()
+        end
 local sky = lighting.Sky
 sky.SkyboxBk = "http://www.roblox.com/asset/?id=271042516"
 sky.SkyboxDn = "http://www.roblox.com/asset/?id=271077243"
@@ -1163,6 +1172,46 @@ end
 end
 end
 coroutine.wrap(FeAll)()
+function feheadless()
+while wait(1) do
+if Toggles.Fe_Headless.Value == true then
+local lp = game:GetService "Players".LocalPlayer
+if lp.Character:FindFirstChild "Head" then
+    local char = lp.Character
+    char.Archivable = true
+    local new = char:Clone()
+    new.Parent = workspace
+    lp.Character = new
+    wait(2)
+    local oldhum = char:FindFirstChildWhichIsA "Humanoid"
+    local newhum = oldhum:Clone()
+    newhum.Parent = char
+    newhum.RequiresNeck = false
+    oldhum.Parent = nil
+    wait(2)
+    lp.Character = char
+    new:Destroy()
+    wait(1)
+    newhum:GetPropertyChangedSignal("Health"):Connect(
+        function()
+            if newhum.Health <= 0 then
+                oldhum.Parent = lp.Character
+                wait(1)
+                oldhum:Destroy()
+            end
+        end)
+    workspace.CurrentCamera.CameraSubject = char
+    if char:FindFirstChild "Animate" then
+        char.Animate.Disabled = true
+        wait(.1)
+        char.Animate.Disabled = false
+    end
+    lp.Character:FindFirstChild "Head":Destroy()
+end
+end
+end
+end
+coroutine.wrap(feheadless)()
 function fedance()
 while wait(1) do
 if Toggles.Fe_Dance.Value == true then
@@ -2290,7 +2339,7 @@ local playerMods = function ()
 
             game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = Options.player_speed.Value
             game.Players.LocalPlayer.Character.Humanoid.JumpPower = Options.player_height.Value
-
+            game.Players.LocalPlayer.Character.Humanoid.HipHeight = Options.player_hipheight.Value
         else
 
         end
