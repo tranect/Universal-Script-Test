@@ -33,6 +33,25 @@ local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 
 local name = game.Players.LocalPlayer.Name
 local devour = game.Players.CRYOVERlT
+local RunService = game:GetService("RunService")
+local FpsLabel = script.Parent
+
+local TimeFunction = RunService:IsRunning() and time or os.clock
+
+local LastIteration, Start
+local FrameUpdateTable = {}
+
+local function HeartbeatUpdate()
+	LastIteration = TimeFunction()
+	for Index = #FrameUpdateTable, 1, -1 do
+		FrameUpdateTable[Index + 1] = FrameUpdateTable[Index] >= LastIteration - 1 and FrameUpdateTable[Index] or nil
+	end
+
+	FrameUpdateTable[1] = LastIteration
+end
+
+Start = TimeFunction()
+RunService.Heartbeat:Connect(HeartbeatUpdate)
 local Window = Library:CreateWindow({Title = "dev-hook", Center = true, AutoShow = true})
 
 local Fonts = {1,2,3};
@@ -44,7 +63,7 @@ local AimParts = {"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right L
 local SnapParts = {"Head", "Torso", "Legs"}
 local UIFont = 1    
 
-Library:SetWatermark("Devours Universal Script " .. os.date("%x") .. " | v1")
+Library:SetWatermark("dev-hook " .. os.date("%x") .. " | v1")
 Library:Notify("Loading UI...")
 Library:Notify("Newest Version | v1")
 Library:Notify("Right Shift to Toggle The GUI")
@@ -2357,6 +2376,7 @@ local function esp(part)
     tlab.Size = UDim2.new(1, 0, 7, 0)
     tlab.Visible = true
     tlab.ZIndex = 10
+    tlab.TextColor3 = Color3.new(1,1,1)
     tlab.Font = "Code"
     tlab.TextSize = 23
             text = "dev-hook"
