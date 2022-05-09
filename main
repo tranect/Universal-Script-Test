@@ -1,4 +1,4 @@
-
+game:GetService("StarterGui").ResetPlayerGuiOnSpawn = false
 local Players, RService = game:GetService("Players"), game:GetService("RunService");
 local LocalP, Mouse = Players.LocalPlayer, Players.LocalPlayer:GetMouse();
 local Rm, Index, NIndex, NCall, Caller = getrawmetatable(game), getrawmetatable(game).__index, getrawmetatable(game).__newindex, getrawmetatable(game).__namecall, checkcaller or is_protosmasher_caller
@@ -41,7 +41,7 @@ local Material1 = {"Plastic", "Neon", "ForceField"}
 local Material2 = {"Plastic", "Neon", "ForceField"}
 local AimParts = {"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"}
 local SnapParts = {"Head", "Torso", "Legs"}
-local UIFont = 1
+local UIFont = 1    
 
 Library:SetWatermark("Devours Universal Script " .. os.date("%x") .. " | v1")
 Library:Notify("Loading UI...")
@@ -111,15 +111,19 @@ Esp2:AddDropdown("SnaplinePart", {Text = "Snapline Part", Default = 1, Values = 
 
 local VisTabbox2 = VisTab:AddLeftTabbox("Local Chams")
 local Chams1 = VisTabbox2:AddTab("Local")
-Chams1:AddToggle("hand_chams", {Text = "Character Chams"}):AddColorPicker("handColor", { Default = Color3.fromRGB(255, 255, 255) })
-Chams1:AddSlider("hand_chams_transparency", { Text = "Hand Chams Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
-Chams1:AddDropdown("hand_mat", {Text = "Hand Material", Default = 3, Values = Material2})
+Chams1:AddSlider("player_fov", {Text = "FOV", Default = 70, Min = 40, Max = 120, Rounding = 0})
+Chams1:AddToggle("gun_chams", {Text = "Tool Chams"}):AddColorPicker("gunColor", { Default = Color3.fromRGB(255, 255, 255) })
+Chams1:AddSlider("gun_chams_transparency", { Text = "Tool Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Chams1:AddDropdown("gun_mat", {Text = "Tool Material", Default = 1, Values = Material1})
+Chams1:AddToggle("hand_chams", {Text = "Player Chams"}):AddColorPicker("handColor", { Default = Color3.fromRGB(255, 255, 255) })
+Chams1:AddSlider("hand_chams_transparency", { Text = "Player Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Chams1:AddDropdown("hand_mat", {Text = "Player Material", Default = 3, Values = Material2})
 
 local Chams2 = VisTabbox2:AddTab("Enemy Chams")
-Chams2:AddToggle("enemy_chams", {Text = "Enemy Chams"}):AddColorPicker("eColor", { Default = Color3.fromRGB(255, 255, 255) })
+Chams2:AddToggle("enemy_chams", {Text = "Chams"}):AddColorPicker("eColor", { Default = Color3.fromRGB(255, 255, 255) })
 Chams2:AddToggle("enemy_chams_ontop", {Text = "Always on Top"})
 Chams2:AddSlider("enemy_chams_transparency", { Text = "Chams Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
-Chams2:AddSlider("enemy_transparency", { Text = "Enemy Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
+Chams2:AddSlider("enemy_transparency", { Text = "Transparency", Default = 0, Min = 0, Max = 100, Rounding = 0, Suffix = "%"})
 
 local VisTabbox3 = VisTab:AddRightTabbox("Crosshair")
 local Cross1 = VisTabbox3:AddTab("Crosshair")
@@ -139,6 +143,12 @@ Rend1:AddSlider("bloom_intensity", { Text = "Intensity", Default = 0, Min = 0, M
 Rend1:AddSlider("bloom_size", { Text = "Size", Default = 0, Min = 0, Max = 56, Rounding = 0})
 Rend1:AddSlider("bloom_threshold", { Text = "Threshold", Default = 0, Min = 0, Max = 40, Rounding = 0})
 
+local VisTabbox5 = VisTab:AddLeftTabbox("SkyBox")
+local Skyb = VisTabbox5:AddTab("Skybox")
+Skyb:AddToggle("skyvis", {Text = "Star SkyBox"})
+Skyb:AddToggle("skyvis1", {Text = "Pink SkyBox"})
+Skyb:AddToggle("blurs", {Text = "Motion Blur"})
+
 local PlayerTabbox1 = RageTab:AddLeftTabbox("Player")
 local Player1 = PlayerTabbox1:AddTab("Player")
 Player1:AddToggle("plr_mod", {Text = "Player Modification"})
@@ -150,11 +160,13 @@ local Exploits1 = ExploitsTabbox1:AddTab("Exploits")
 Exploits1:AddLabel("Fly"):AddKeyPicker("flyKey", {Text = "Fly", Default = "F"})
 Exploits1:AddLabel("Phase"):AddKeyPicker("phaseKey", {Text = "Phase Key", Default = "C", Mode = "Toggle"})
 Exploits1:AddLabel("ClickTP"):AddKeyPicker("tpKey", {Text = "Click TP", Default = "E", Mode = "Hold"})
+Exploits1:AddLabel("Spin"):AddKeyPicker("spKey", {Text = "Spins Player", Default = "R", Mode = "Toggle"})
 
 local FETabbox1 = RageTab:AddRightTabbox("Exploits")
 local FE1 = FETabbox1:AddTab("Fe")
 FE1:AddToggle("Fe_Godmode", {Text = "Godmode(Breaks Script)"})
 FE1:AddToggle("Fe_All", {Text = "FeAll(Fekills The Server)"})
+FE1:AddToggle("Fe_Dance", {Text = "Fe Dance(very aids)"})
 
 local function UpdateTheme()
     Library.BackgroundColor = Options.BackgroundColor.Value;
@@ -950,9 +962,83 @@ if texts <= Options.esp_distance.Value then
         end)
     
     end)
-
 end
 coroutine.wrap(SnaplineESP)()
+function sbox()
+    game:GetService("RunService").RenderStepped:Connect(function()
+if Toggles.skyvis.Value == true then
+local lighting = game.Lighting
+        if lighting:FindFirstChild("ColorCorrection") then
+            lighting:FindFirstChild("ColorCorrection"):Remove()
+        end
+        if lighting:FindFirstChild("Correction") then
+            lighting:FindFirstChild("Correction"):Remove()
+        end
+        if lighting:FindFirstChildOfClass("SunRaysEffect") then
+            lighting:FindFirstChildOfClass("SunRaysEffect"):Remove()
+        end
+
+        local sunray = Instance.new("SunRaysEffect", lighting)
+        local sky = lighting.Sky
+        sky.SkyboxBk = "http://www.roblox.com/asset/?id=149397692"
+        sky.SkyboxDn = "http://www.roblox.com/asset/?id=149397686"
+        sky.SkyboxFt = "http://www.roblox.com/asset/?id=149397697"
+        sky.SkyboxLf = "http://www.roblox.com/asset/?id=149397684"
+        sky.SkyboxRt = "http://www.roblox.com/asset/?id=149397688"
+        sky.SkyboxUp = "http://www.roblox.com/asset/?id=149397702"
+
+        sky.StarCount = 3000
+        sky.SunAngularSize = 21
+        sky.MoonAngularSize = 11
+if Toggles.skyvis.Value == false then
+sunray:Destroy()
+end
+end
+end)
+end
+coroutine.wrap(sbox)()
+function sbox1()
+    game:GetService("RunService").RenderStepped:Connect(function()
+if Toggles.skyvis1.Value == true then
+rpm = 1
+game:GetService('RunService').RenderStepped:connect(function()
+    --[[for i=1,math.ceil((rpm/60)/60) do]] -- not needed :shrug:
+        game.Lighting.TimeOfDay = "19:00:00" -- makes it day all the time
+    end)
+
+local lighting = game.Lighting
+local sunray = Instance.new("SunRaysEffect", lighting)
+local sky = lighting.Sky
+sky.SkyboxBk = "http://www.roblox.com/asset/?id=271042516"
+sky.SkyboxDn = "http://www.roblox.com/asset/?id=271077243"
+sky.SkyboxFt = "http://www.roblox.com/asset/?id=271042556"
+sky.SkyboxLf = "http://www.roblox.com/asset/?id=271042310"
+sky.SkyboxRt = "http://www.roblox.com/asset/?id=271042467"
+sky.SkyboxUp = "http://www.roblox.com/asset/?id=271077958"
+sky.StarCount = 3000
+sky.SunAngularSize = 21
+sky.MoonAngularSize = 11
+if Toggles.skyvis1.Value == false then
+sunray:Destroy()
+end
+end
+end)
+end
+coroutine.wrap(sbox1)()
+function blur()
+game:GetService("RunService").RenderStepped:Connect(function()
+if Toggles.blurs.Value == true then
+local lv = Vector3.zero
+
+	local x,y,z = game.Workspace.CurrentCamera.CFrame:ToEulerAnglesXYZ()
+	x,y,z = math.deg(x),math.deg(y),math.deg(z)
+	
+	game.Lighting.Blur.Size = math.clamp((Vector3.new(x,y,z)-lv).Magnitude/2,2,10)
+	lv = Vector3.new(x,y,z)
+end
+end)
+end
+coroutine.wrap(blur)()
 function localChams()
     game:GetService("RunService").RenderStepped:Connect(function()
         if Toggles.hand_chams.Value == true then
@@ -1043,6 +1129,458 @@ end
 end
 end
 coroutine.wrap(FeAll)()
+function fedance()
+while wait(1) do
+if Toggles.Fe_Dance.Value == true then
+local animid;
+animid="rbxassetid://3690496479"
+HumanDied = false
+local CountSCIFIMOVIELOL = 1
+function SCIFIMOVIELOL(Part0,Part1,Position,Angle)
+local AlignPos = Instance.new('AlignPosition', Part1); AlignPos.Name = "AliP_"..CountSCIFIMOVIELOL
+AlignPos.ApplyAtCenterOfMass = true;
+AlignPos.MaxForce = 5772000--67752;
+AlignPos.MaxVelocity = math.huge/9e110;
+AlignPos.ReactionForceEnabled = false;
+AlignPos.Responsiveness = 200;
+AlignPos.RigidityEnabled = false;
+local AlignOri = Instance.new('AlignOrientation', Part1); AlignOri.Name = "AliO_"..CountSCIFIMOVIELOL
+AlignOri.MaxAngularVelocity = math.huge/9e110;
+AlignOri.MaxTorque = 5772000
+AlignOri.PrimaryAxisOnly = false;
+AlignOri.ReactionTorqueEnabled = false;
+AlignOri.Responsiveness = 200;
+AlignOri.RigidityEnabled = false;
+local AttachmentA=Instance.new('Attachment',Part1); AttachmentA.Name = "Ath_"..CountSCIFIMOVIELOL
+local AttachmentB=Instance.new('Attachment',Part0); AttachmentB.Name = "Ath_"..CountSCIFIMOVIELOL
+AttachmentA.Orientation = Angle or Vector3.new(0,0,0)
+AttachmentA.Position = Position or Vector3.new(0,0,0)
+AlignPos.Attachment1 = AttachmentA;
+AlignPos.Attachment0 = AttachmentB;
+AlignOri.Attachment1 = AttachmentA;
+AlignOri.Attachment0 = AttachmentB;
+CountSCIFIMOVIELOL = CountSCIFIMOVIELOL + 1
+return {AlignPos,AlignOri,AttachmentA,AttachmentB}
+end
+
+if _G.netted ~= true then
+_G.netted = true
+coroutine.wrap(function()
+settings().Physics.PhysicsEnvironmentalThrottle = Enum.EnviromentalPhysicsThrottle.Disabled
+settings().Physics.AllowSleep = false
+game:GetService("RunService").RenderStepped:Connect(function()
+game:FindFirstChildOfClass("Players").LocalPlayer.MaximumSimulationRadius=math.pow(math.huge,math.huge)
+sethiddenproperty(game:FindFirstChildOfClass("Players").LocalPlayer,"SimulationRadius",math.huge*math.huge)
+end)
+end)()
+end
+
+game:FindFirstChildOfClass("Players").LocalPlayer["Character"].Archivable = true
+local hatnameclone = {}
+for _,v in next, game:FindFirstChildOfClass("Players").LocalPlayer["Character"]:GetChildren() do
+if v:IsA("Accessory") then
+if hatnameclone[v.Name] then
+if hatnameclone[v.Name] == "s" then
+hatnameclone[v.Name] = {}
+end
+table.insert(hatnameclone[v.Name],v)
+else
+hatnameclone[v.Name] = "s"
+end
+end
+end
+for _,v in pairs(hatnameclone) do
+if type(v) == "table" then
+local num = 1
+for _,w in pairs(v) do
+w.Name = w.Name..num
+num = num + 1
+end
+end
+end
+hatnameclone = nil
+
+local DeadChar = game:FindFirstChildOfClass("Players").LocalPlayer.Character
+
+local fldr = Instance.new("Folder",game:FindFirstChildOfClass("Players").LocalPlayer["Character"])
+fldr.Name = "DMYF"
+local CloneChar = DeadChar:Clone()
+local ANIMATIONHERE
+if CloneChar:FindFirstChild("Animate") then
+ANIMATIONHERE = CloneChar:FindFirstChild("Animate"):Clone()
+CloneChar:FindFirstChild("Animate"):Destroy()
+end
+if CloneChar:FindFirstChildOfClass("Folder") then CloneChar:FindFirstChildOfClass("Folder"):Destroy() end
+if CloneChar.Torso:FindFirstChild("Neck") then
+local Clonessss = CloneChar.Torso:FindFirstChild("Neck"):Clone()
+Clonessss.Part0 = nil
+Clonessss.Part1 = DeadChar.Head
+Clonessss.Parent = DeadChar.Torso
+end
+CloneChar.Parent = fldr
+CloneChar.HumanoidRootPart.CFrame = DeadChar.HumanoidRootPart.CFrame
+CloneChar.Humanoid.BreakJointsOnDeath = false
+CloneChar.Name = "non"
+CloneChar.Humanoid.DisplayDistanceType = "None"
+
+for _,v in next, DeadChar:GetChildren() do
+if v:IsA("Accessory") then
+local topacc = false
+if v.Handle:FindFirstChildOfClass("Weld") then v.Handle:FindFirstChildOfClass("Weld"):Destroy() end
+v.Handle.Massless = true
+v.Handle.CanCollide = false
+if v.Handle:FindFirstChildOfClass("Attachment") then
+local ath__ = v.Handle:FindFirstChildOfClass("Attachment")
+if ath__.Name == "HatAttachment" or ath__.Name == "HairAttachment" or ath__.Name == "FaceFrontAttachment" or ath__.Name == "FaceCenterAttachment" then
+topacc = ath__.Name
+end
+end
+       local bv = Instance.new("BodyVelocity",v.Handle)
+bv.Velocity = Vector3.new(0,0,0)
+coroutine.wrap(function()
+if topacc then
+local allthings = SCIFIMOVIELOL(v.Handle,DeadChar.Torso,Vector3.new(0,1.5,0)+ (DeadChar.Head[topacc].Position + (v.Handle[topacc].Position*-1)),Vector3.new(0,0,0))
+local normaltop = allthings[1].Attachment1
+local alipos = allthings[1]
+local alirot = allthings[2]
+local p0 = v.Handle
+local p1 = DeadChar.Head
+alipos.Parent = CloneChar:FindFirstChild(v.Name).Handle
+alirot.Parent = CloneChar:FindFirstChild(v.Name).Handle
+while true do
+game:GetService("RunService").RenderStepped:wait()
+if HumanDied then break end
+coroutine.wrap(function()
+if alipos.Attachment1 == normaltop then
+p0.CFrame = p0.CFrame:lerp((((DeadChar.Torso.CFrame * CFrame.new(0,1.5,0)) * p1[topacc].CFrame) * p0[topacc].CFrame:inverse()),1)
+else
+v.Handle.CFrame = v.Handle.CFrame:lerp(alipos.Attachment1.Parent.CFrame * CFrame.new(alipos.Attachment1.Position) * CFrame.Angles(math.rad(alipos.Attachment1.Rotation.X),math.rad(alipos.Attachment1.Rotation.Y),math.rad(alipos.Attachment1.Rotation.Z)),1)
+end
+end)()
+end
+else
+SCIFIMOVIELOL(v.Handle,CloneChar[v.Name].Handle,Vector3.new(0,0,0),Vector3.new(0,0,0))
+end
+end)()
+   end
+end
+
+local a = DeadChar.Torso
+local b = DeadChar.HumanoidRootPart
+local c = DeadChar.Humanoid
+a.Parent = game:FindFirstChildOfClass("Workspace")
+c.Parent = game:FindFirstChildOfClass("Workspace")
+local told = a:Clone()
+local told1 = c:Clone()
+b["RootJoint"].Part0 = told
+b["RootJoint"].Part1 = DeadChar.Head
+a.Name = "torso"
+a.Neck:Destroy()
+c.Name = "Cloned Avatar"
+told.Parent = DeadChar
+told1.Parent = DeadChar
+DeadChar.PrimaryPart = told
+told1.Health = 0
+b:Destroy()
+a.Parent = DeadChar
+c.Parent = DeadChar
+told:Destroy()
+told1:Destroy()
+a.Name = "Torso"
+
+if CloneChar.Head:FindFirstChildOfClass("Decal") then CloneChar.Head:FindFirstChildOfClass("Decal").Transparency = 1 end
+if DeadChar:FindFirstChild("Animate") then DeadChar:FindFirstChild("Animate"):Destroy() end
+
+local Collider
+function UnCollide()
+   if HumanDied then Collider:Disconnect(); return end
+
+   for _,Parts in next, DeadChar:GetChildren() do
+       if Parts:IsA("BasePart") then
+       Parts.CanCollide = false
+       end
+   end
+end
+Collider = game:GetService("RunService").Stepped:Connect(UnCollide)
+
+local resetBindable = Instance.new("BindableEvent")
+resetBindable.Event:connect(function()
+   game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
+resetBindable:Destroy()
+HumanDied = true
+   pcall(function()
+game:FindFirstChildOfClass("Players").LocalPlayer.Character = DeadChar
+DeadChar.Head:Destroy()
+DeadChar:FindFirstChildOfClass("Humanoid"):Destroy()
+game:FindFirstChildOfClass("Players").LocalPlayer.Character = CloneChar
+if DeadChar:FindFirstChildOfClass("Folder") then DeadChar:FindFirstChildOfClass("Folder"):Destroy() end
+end)
+end)
+game:GetService("StarterGui"):SetCore("ResetButtonCallback", resetBindable)
+
+coroutine.wrap(function()
+   while true do
+       game:GetService("RunService").RenderStepped:wait()
+       if not CloneChar or not CloneChar:FindFirstChild("Head") or not CloneChar:FindFirstChildOfClass("Humanoid") or CloneChar:FindFirstChildOfClass("Humanoid").Health <= 0 and not DeadChar or not DeadChar:FindFirstChild("Head") or not DeadChar:FindFirstChildOfClass("Humanoid") or DeadChar:FindFirstChildOfClass("Humanoid").Health <= 0 then
+           HumanDied = true
+           pcall(function()
+game:FindFirstChildOfClass("Players").LocalPlayer.Character = DeadChar
+DeadChar.Head:Destroy()
+DeadChar:FindFirstChildOfClass("Humanoid"):Destroy()
+game:FindFirstChildOfClass("Players").LocalPlayer.Character = CloneChar
+if DeadChar:FindFirstChildOfClass("Folder") then DeadChar:FindFirstChildOfClass("Folder"):Destroy() end
+end)
+           if resetBindable then
+               game:GetService("StarterGui"):SetCore("ResetButtonCallback", true)
+               resetBindable:Destroy()
+           end
+           break
+       end
+   end
+end)()
+
+
+SCIFIMOVIELOL(DeadChar["Head"],CloneChar["Head"])
+SCIFIMOVIELOL(DeadChar["Torso"],CloneChar["Torso"])
+SCIFIMOVIELOL(DeadChar["Left Arm"],CloneChar["Left Arm"])
+SCIFIMOVIELOL(DeadChar["Right Arm"],CloneChar["Right Arm"])
+SCIFIMOVIELOL(DeadChar["Left Leg"],CloneChar["Left Leg"])
+SCIFIMOVIELOL(DeadChar["Right Leg"],CloneChar["Right Leg"])
+
+for _,v in pairs(DeadChar:GetChildren()) do
+if v:IsA("BasePart") and v.Name ~= "Head" then
+elseif v:IsA("BasePart") and v.Name == "Head" then
+local bv = Instance.new("BodyVelocity",v)
+bv.Velocity = Vector3.new(0,0,0)
+coroutine.wrap(function()
+while true do
+game:GetService("RunService").RenderStepped:wait()
+if HumanDied then break end
+v.CFrame = DeadChar.Torso.CFrame * CFrame.new(0,1.5,0)
+end
+end)()
+end
+end
+
+for _,BodyParts in next, CloneChar:GetDescendants() do
+if BodyParts:IsA("BasePart") or BodyParts:IsA("Part") then
+BodyParts.Transparency = 1 end end
+game:GetService("RunService").RenderStepped:wait()
+game:FindFirstChildOfClass("Players").LocalPlayer.Character = CloneChar
+game:FindFirstChildOfClass("Workspace"):FindFirstChildOfClass("Camera").CameraSubject = CloneChar.Humanoid
+
+for _,v in next, DeadChar:GetChildren() do
+if v:IsA("Accessory") then
+if v.Handle:FindFirstChildOfClass("Weld") then v.Handle:FindFirstChildOfClass("Weld"):Destroy() end
+end
+end
+
+if ANIMATIONHERE then ANIMATIONHERE.Parent = CloneChar end
+
+
+
+local playing = false
+local rtrnv;
+local c;
+local tbl3;
+local v;
+local anim;
+local count;
+local hhhh;
+local asdf;
+local s;
+local plr;
+local char;
+local cframe;
+local torso;
+local rs;
+local ls;
+local rh;
+local lh;
+local n;
+local rj;
+local rsc0;
+local lsc0;
+local rhc0;
+local lhc0;
+local rjc0;
+local nc0;
+local gc0;
+local orsc0;
+local olsc0;
+local orhc0;
+local olhc0;
+local orjc0;
+local onc0;
+local count2;
+local maxcount2;
+
+local function getnext(tbl,number)
+c=100
+rtrnv=0
+for i,v in pairs(tbl) do
+if i>number and i-number<c then
+c=i-number
+rtrnv=i
+end
+end
+return(rtrnv)
+end
+local function wait2(tim)
+if tim<0.1 then
+game:GetService("RunService").Heartbeat:Wait()
+else
+for i=1,tim*40 do
+game:GetService("RunService").Heartbeat:Wait()
+end
+end
+end
+local function kftotbl(kf) -- Below this is PAIN
+tbl3 = {}
+for i,v in pairs(kf:GetDescendants()) do
+if v:IsA("Pose") then
+tbl3[string.sub(v.Name,1,1)..string.sub(v.Name,#v.Name,#v.Name)] = v.CFrame
+end
+end
+return(tbl3)
+end
+       
+       if playanother == true then
+playanother = false
+end
+playing = true
+wait(.1) -- Do not change because changing it will break.
+plr = game.Players.LocalPlayer
+char = game:GetService("Players").LocalPlayer.Character
+if _G.permadeath == true then
+char = workspace.non
+end
+cframe = char.HumanoidRootPart.CFrame
+torso = char.Torso
+-----------------------------------------------------------
+rs = torso["Right Shoulder"] -- Just took this from another script(Faster).
+ls = torso["Left Shoulder"]
+rh = torso["Right Hip"]
+lh = torso["Left Hip"]
+n = torso["Neck"]
+rj = char.HumanoidRootPart["RootJoint"]
+rsc0 = rs.C0
+lsc0 = ls.C0
+rhc0 = rh.C0
+lhc0 = lh.C0
+rjc0 = rj.C0
+nc0 = n.C0
+gc0 = CFrame.new()
+orsc0 = rs.C0
+olsc0 = ls.C0
+orhc0 = rh.C0
+olhc0 = lh.C0
+orjc0 = rj.C0
+onc0 = n.C0
+count2 = 100
+maxcount2=100
+-----------------------------------------------------------
+game:GetService("RunService").Heartbeat:Connect(function() -- Speed.
+if playanother == true then
+return nil
+else
+count2 = count2+1
+if count2<=maxcount2 then
+rs.Transform=rs.Transform:Lerp(rsc0,count2/maxcount2)
+ls.Transform=ls.Transform:Lerp(lsc0,count2/maxcount2)
+rh.Transform=rh.Transform:Lerp(rhc0,count2/maxcount2)
+lh.Transform=lh.Transform:Lerp(lhc0,count2/maxcount2)
+n.Transform=n.Transform:Lerp(nc0,count2/maxcount2)
+rj.Transform=rj.Transform:Lerp(rjc0,count2/maxcount2)
+end
+end
+end)
+-----------------------------------------------------------
+animid=game:GetObjects(animid)[1]
+anim={}
+for i,v in pairs(animid:GetChildren()) do
+if v:IsA("Keyframe") then
+anim[v.Time]=kftotbl(v)
+end
+end
+
+count = 0
+char=game:GetService("Players").LocalPlayer.Character
+if _G.permadeath == true then
+char = workspace.non
+end
+if _G.permadeath == false then
+hhhh=char.Humanoid.Animator
+hhhh.Parent = nil
+end
+hhhh=char.Humanoid.Animator
+hhhh.Parent = nil
+for _,v in pairs(char.Humanoid:GetPlayingAnimationTracks()) do
+v:Stop()
+end
+
+plr.CharacterRemoving:Connect(function()
+if playing == true then
+playing = false
+end
+end)
+
+while wait() do
+if playanother == true then
+break
+else
+for i,oasjdadlasdkadkldjkl in pairs(anim) do
+asdf=getnext(anim,count)
+v=anim[asdf]
+if v["Lg"] then
+lhc0 = v["Lg"]
+end
+if v["Rg"] then
+rhc0 = v["Rg"]
+end
+if v["Lm"] then
+lsc0 = v["Lm"]
+end
+if v["Rm"] then
+rsc0 = v["Rm"]
+end
+if v["To"] then
+rjc0 = v["To"]
+end
+if v["Hd"] then
+nc0 = v["Hd"]
+end
+count2=0
+maxcount2=asdf-count
+count=asdf
+wait(asdf-count)
+count2=maxcount2
+if v["Lg"] then
+char.Torso["Left Hip"].Transform = v["Lg"]
+end
+if v["Rg"] then
+char.Torso["Right Hip"].Transform = v["Rg"]
+end
+if v["Lm"] then
+char.Torso["Left Shoulder"].Transform = v["Lm"]
+end
+if v["Rm"] then
+char.Torso["Right Shoulder"].Transform = v["Rm"]
+end
+if v["To"] then
+char.HumanoidRootPart["RootJoint"].Transform = v["To"]
+end
+if v["Hd"] then
+char.Torso["Neck"].Transform = v["Hd"]
+end
+end
+end
+end
+end
+end
+end
+coroutine.wrap(fedance)()
+--end)
 function FeGod()
 while wait(5) do
 if Toggles.Fe_Godmode.Value == true then
@@ -1082,7 +1620,219 @@ end
     end
 end
 end
-coroutine.wrap(FeAll)()
+coroutine.wrap(FeGod)()
+getgenv().Players = game:GetService'Players'
+getgenv().TeleportService = game:GetService'TeleportService'
+getgenv().ReplicatedStorage = game:GetService'ReplicatedStorage' 
+getgenv().StarterGui = game:GetService'StarterGui'
+getgenv().TweenService = game:GetService'TweenService'
+getgenv().UserInput = game:GetService'UserInputService'
+getgenv().RunService = game:GetService'RunService'
+getgenv().Lighting = game:GetService'Lighting'
+getgenv().CoreGui = game:GetService'CoreGui'
+getgenv().HttpService = game:GetService'HttpService'
+getgenv().VirtualUser = game:GetService'VirtualUser'
+getgenv().LP = Players.LocalPlayer or Players.PlayerAdded:Wait()
+getgenv().Mouse = LP:GetMouse()
+getgenv().GetChar = function() return LP.Character or LP.CharacterAdded:Wait() end
+GetChar():WaitForChild'Humanoid'
+
+local Players, RService, RStorage, VUser, SGui, TPService = game:GetService("Players"), game:GetService("RunService"), game:GetService("ReplicatedStorage"), game:GetService("VirtualUser"), game:GetService("StarterGui"), game:GetService("TeleportService")
+local Client, Mouse, Camera, CF, INew, Vec3, Vec2, UD2, UD = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Instance.new, Vector3.new, Vector2.new, UDim2.new, UDim.new;
+local Flyspeed = 5;
+local Flying, Spinning = false, false;
+local KeysTable = {
+    ["W"] = false;["A"] = false;
+    ["S"] = false;["D"] = false;
+}
+getgenv().togglefly = function()
+    Flying = not Flying
+    local T = Client.Character:FindFirstChild("HumanoidRootPart") or Client.Character:FindFirstChild("Torso")
+    local BV, BG = INew("BodyVelocity", T), INew("BodyGyro", T)
+    BV.Velocity = Vec3(0, 0.1, 0);BV.MaxForce = Vec3(math.huge, math.huge, math.huge)
+    BG.CFrame = T.CFrame;BG.P = 9e9;BG.MaxTorque = Vec3(9e9, 9e9, 9e9)
+    local FlyPart = INew("Part", workspace)
+    FlyPart.Anchored = true;FlyPart.Size = Vec3(6, 1, 6);FlyPart.Transparency = 1 
+    game.Players.LocalPlayer.Character.Humanoid.PlatformStand = true
+    while Flying == true and Client and Client.Character and Client.Character:FindFirstChild("Humanoid") and Client.Character.Humanoid.Health ~= 0 and RService.Heartbeat:Wait() and T do 
+        local Front, Back, Left, Right = 0, 0, 0, 0
+        if KeysTable["W"] == true then 
+            Front = Flyspeed 
+        elseif not KeysTable["W"] == true then
+            Front = 0 
+        end
+        if KeysTable["A"] == true then 
+            Right = -Flyspeed
+        elseif not KeysTable["A"] == true then 
+            Right = 0 
+        end
+        if KeysTable["S"] == true then 
+            Back = -Flyspeed 
+        elseif not KeysTable["S"] == true then 
+            Back = 0
+        end
+        if KeysTable["D"] == true then 
+            Left = Flyspeed
+        elseif not KeysTable["D"] == true then 
+            Left = 0
+        end
+        if tonumber(Front + Back) ~= 0 or tonumber(Left + Right) ~= 0 then 
+            BV.Velocity = ((Camera.CoordinateFrame.lookVector * (Front + Back)) + ((Camera.CoordinateFrame * CF(Left + Right, (Front + Back) * 0.2, 0).p) - Camera.CoordinateFrame.p)) * 50
+        else 
+            BV.Velocity = Vec3(0, 0.1, 0)
+        end
+        BG.CFrame = Camera.CoordinateFrame
+    end
+    FlyPart:Destroy();BG:Remove();BV:Remove()
+  game.Players.LocalPlayer.Character.Humanoid.PlatformStand = false
+end
+
+UIS.InputBegan:Connect(function(Key)
+    if not (UIS:GetFocusedTextBox()) then
+        if Key.KeyCode == Enum.KeyCode.W then 
+            KeysTable["W"] = true 
+        end 
+        if Key.KeyCode == Enum.KeyCode.A then 
+            KeysTable["A"] = true 
+        end
+        if Key.KeyCode == Enum.KeyCode.S then 
+            KeysTable["S"] = true 
+        end
+        if Key.KeyCode == Enum.KeyCode.D then 
+            KeysTable["D"] = true 
+        end
+        if Key.KeyCode == Enum.KeyCode[Options.flyKey.Value] then 
+            if FirstFly == true then 
+                FirstFly = false 
+            end
+            togglefly()
+        end
+end
+end)
+UIS.InputEnded:Connect(function(Key --[[Typing]])
+    if not (UIS:GetFocusedTextBox()) then
+        if Key.KeyCode == Enum.KeyCode.W then 
+            KeysTable["W"] = false 
+        end
+        if Key.KeyCode == Enum.KeyCode.A then 
+            KeysTable["A"] = false 
+        end
+        if Key.KeyCode == Enum.KeyCode.S then 
+            KeysTable["S"] = false 
+        end
+        if Key.KeyCode == Enum.KeyCode.D then 
+            KeysTable["D"] = false
+        end
+        if Key.KeyCode == Enum.KeyCode.LeftShift then
+            KeysTable["LeftShift"] = false
+        end
+    end
+end)
+local rm = getrawmetatable(game) or debug.getrawmetatable(game) or getmetatable(game)
+if setreadonly then setreadonly(rm, false) else make_writeable(rm, true) end
+local caller, cscript = checkcaller or is_protosmasher_caller, getcallingscript or get_calling_script;
+local rindex, nindex, ncall, closure = rm.__index, rm.__newindex, rm.__namecall, newcclosure or read_me;
+
+rm.__newindex = closure(function(self, Meme, Val)
+    if caller() then return nindex(self, Meme, Val) end 
+    if game.PlaceId ~= (StreetsID) then 
+        if Meme == "WalkSpeed" then 
+            return 16
+        end
+        if Meme == "JumpPower" then 
+            return 37.5 
+        end
+        if Meme == "HipHeight" then 
+            return 0 
+        end
+        if Meme == "Health" then 
+            return 100 
+        end
+    end
+    if self:IsDescendantOf(Client.Character) and self.Name == "HumanoidRootPart" or self.Name == "Torso" then 
+        if Meme == "CFrame" or Meme == "Position" or Meme == "Anchored" then 
+            return nil 
+        end
+    end
+    return nindex(self, Meme, Val) 
+end)
+rm.__namecall = closure(function(self, ...)
+    local Args, Method = {...}, getnamecallmethod() or get_namecall_method();
+    if Method == "BreakJoints" then 
+        return wait(9e9)
+    end
+    if game.PlaceId ~= (StreetsID) then
+        if Method == "FireServer" and not self.Name == "SayMessageRequest" then
+            if tostring(self.Parent) == "ReplicatedStorage" or self.Name == "lIII" then 
+                return wait(9e9) 
+            end
+            if Args[1] == "hey" then 
+                return wait(9e9) 
+            end
+        end
+        if Method == "FireServer" and self.Name == "Fire" and AimbotTarget ~= nil and Aimbot == true  then
+            return ncall(self, AimbotTarget.Character[AimPart].CFrame + AimbotTarget.Character[AimPart].Velocity/Aimvelocity)
+        end
+    end
+    if game.PlaceId == (StreetsID) then
+        if Method == "FireServer" and Args[1] == "WalkSpeed" or Args[1] == "JumpPower" or Args[1] == "HipHeight" then 
+            return nil 
+        end
+        if Method == "FireServer" and self.Name == "Input" then 
+            if Args[1] == "bv" or Args[1] == "hb" or Args[1] == "ws" then 
+                return wait(9e9)
+            end
+        end
+        if Method == "FireServer" and self.Name == "Input" and AimbotTarget ~= nil and Aimbot == true then 
+            Args[2].mousehit = AimbotTarget.Character[AimPart].CFrame + AimbotTarget.Character[AimPart].Velocity/Aimvelocity 
+            Args[2].velo = math.huge
+            return ncall(self, unpack(Args))
+        end
+    end
+    return ncall(self, unpack(Args))
+end)
+if setreadonly then setreadonly(rm, true) else make_writeable(rm, false) end
+RService.Stepped:Connect(function()
+    if Flying and Client.Character then
+        if Client.Character and Client.Character:FindFirstChild("Humanoid") then
+            RService.Heartbeat:Wait()
+            Client.Character.Humanoid.PlatformStand = false;Client.Character.Humanoid.Sit = false
+            Client.Character.Humanoid:ChangeState(Enum.HumanoidStateType.Running)
+        end
+    end
+    if Client.Character:FindFirstChild("FlyPart") then
+        Client.Character:FindFirstChild("FlyPart").CFrame = Client.Character.HumanoidRootPart.CFrame * CF(0, -3.5, 0)
+    end
+end)
+Client.Character.Humanoid.Died:Connect(function()
+    if Flying then togglefly() end
+end)
+Client.CharacterAdded:Connect(function()
+    repeat wait() until Client.Character:FindFirstChild("Humanoid")
+    Client.Character.Humanoid.Died:Connect(function()
+        if Flying then togglefly() end
+    end)
+end)
+function gunChams()
+    game:GetService("RunService").RenderStepped:Connect(function()
+        if Toggles.gun_chams.Value == true then   
+            for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+if v:IsA("Tool") then
+for _, i in pairs(v:GetDescendants()) do 
+                if i:IsA("UnionOperation") or i:IsA("MeshPart") or  i:IsA("Part") then
+                    
+                    i.Color = Options.gunColor.Value
+                    i.Material = Options.gun_mat.Value
+                    i.Transparency = Options.gun_chams_transparency.Value / 100
+                end
+            end
+        end
+end
+end
+    end)
+end
+
+coroutine.wrap(gunChams)()
 -- Enemy Chams
 function chams()
     game:GetService("RunService").RenderStepped:Connect(function()
@@ -1104,17 +1854,20 @@ function chams()
                                 box.Transparency = Options.enemy_chams_transparency.Value / 100
                                 box.AlwaysOnTop = Toggles.enemy_chams_ontop.Value
                             until Toggles.enemy_chams.Value == false
-if game.Players.LocalPlayer.Character:FindFirstChild("Body Colors") then
-game.Players.LocalPlayer.Character["Body Colors"]:Destroy() 
+
                         end
                     end
                 end
             end
         end
-    end    
-end)
+    end)
 end
 coroutine.wrap(chams)()
+dwRunService.RenderStepped:Connect(function ()
+
+    game:GetService("Workspace").Camera.FieldOfView = Options.player_fov.Value
+
+end)
 
 function destroyChams()
     game:GetService("RunService").RenderStepped:Connect(function ()
@@ -1132,6 +1885,24 @@ end
     end)
 end
 coroutine.wrap(destroyChams)()
+local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+local character = player.Character
+local hmrp = character:WaitForChild("HumanoidRootPart")
+local hum = character:WaitForChild("Humanoid")
+getgenv().togglespin = function()
+Spinning = not Spinning
+RService.Stepped:Connect(function()
+		hmrp.CFrame = hmrp.CFrame*CFrame.new(0, 0, 0) * CFrame.Angles(0,180,0)
+		local BodyAngularVelocity = Instance.new("BodyAngularVelocity", hmrp)
+		BodyAngularVelocity.AngularVelocity = Vector3.new(10,0,0)
+		end)
+	end
+UIS.InputBegan:Connect(function(i)
+                    if i.KeyCode == Enum.KeyCode[Options.spKey.Value] then
+togglespin()
+end
+end)
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -1498,146 +2269,6 @@ local PhaseKey = function ()
 end
 coroutine.wrap(PhaseKey)()
 
-
-local Player = game:GetService("Players").LocalPlayer
-local Mouse = Player:GetMouse()
-local HumanoidRootPart = Player.Character:WaitForChild("HumanoidRootPart")
-local Humanoid = Player.Character:WaitForChild("Humanoid")
-local Flying = false
-local Control = {f = 0, b = 0, l = 0, r = 0} 
-local LastControl = {f = 0, b = 0, l = 0, r = 0} 
-local MaxSpeed = 50 
-local Speed = 10    
-local Camera = workspace.CurrentCamera
-                local WKey = Enum.KeyCode.W
-                local AKey = Enum.KeyCode.A
-                local SKey = Enum.KeyCode.S
-                local DKey = Enum.KeyCode.D
-
-if Player:FindFirstChildOfClass("PlayerGui"):FindFirstChild("DConsole_FLY_SCRIPT") then
-    wait(1)
-    Player:FindFirstChildOfClass("PlayerGui"):FindFirstChild("DConsole_FLY_SCRIPT"):remove()
-    if Player.Character.HumanoidRootPart:FindFirstChild("BodyGyro") then
-    Player.Character.HumanoidRootPart:FindFirstChild("BodyGyro"):Destroy()
-    end
-if Player.Character.HumanoidRootPart:FindFirstChild("BodyVelocity") then
-    Player.Character.HumanoidRootPart:FindFirstChild("BodyVelocity"):Destroy()
-end
-end
-
-if Player.Character:FindFirstChild("Humanoid").Health == 0 then
-    wait(1)
-    script:Destroy()
-    return
-end
-
-Instance.new("StringValue",script).Name = "DO_NOT_REENABLE"			
-
-script.Parent = Player:FindFirstChild("PlayerGui")
-script.Name = "DConsole_FLY_SCRIPT"
-
-function Fly() 
-    local Gyro = Instance.new("BodyGyro", HumanoidRootPart) 
-    Gyro.P = 9e4 
-    Gyro.maxTorque = Vector3.new(9e9, 9e9, 9e9) 
-    Gyro.cframe = HumanoidRootPart.CFrame 
-    
-    local Velocity = Instance.new("BodyVelocity", HumanoidRootPart) 
-    Velocity.velocity = Vector3.new(0,0.1,0) 
-    Velocity.maxForce = Vector3.new(9e9, 9e9, 9e9) 
-    
-    repeat
-        wait() 
-        
-        Humanoid.PlatformStand = true 
-        
-        if Control.l + Control.r + Control.f + Control.b > 0 then
-
-        else
-
-        end
-        
-        if Control.l + Control.r ~= 0 or Control.f + Control.b ~= 0 then 
-        
-            Speed = Speed+.5+(Speed/MaxSpeed) 
-            
-            if Speed > MaxSpeed then 
-                Speed = MaxSpeed 
-            end 
-        elseif not (Control.l + Control.r ~= 0 or Control.f + Control.b ~= 0) and Speed ~= 0 then 
-            Speed = Speed-1 
-            if Speed < 0 then 
-                Speed = 0
-            end 
-        end 
-            
-        if (Control.l + Control.r) ~= 0 or (Control.f + Control.b) ~= 0 then 
-        
-            Velocity.velocity = 
-                ((Camera.CoordinateFrame.lookVector * (Control.f + Control.b)) +
-                ((Camera.CoordinateFrame * CFrame.new(Control.l + Control.r,(Control.f + Control.b) * 0.2, 0).p) - --yuck
-                Camera.CoordinateFrame.p))*Speed
-                
-            LastControl = {f = Control.f, b = Control.b, l = Control.l, r = Control.r}
-            
-        elseif (Control.l + Control.r) == 0 and (Control.f + Control.b) == 0 and Speed ~= 0 then 
-        
-            Velocity.velocity = 
-                ((Camera.CoordinateFrame.lookVector * (LastControl.f + LastControl.b)) +
-                ((Camera.CoordinateFrame * CFrame.new(LastControl.l + LastControl.r, (LastControl.f + LastControl.b) * 0.2, 0).p) - --also yuck
-                Camera.CoordinateFrame.p))*Speed 
-                
-        else 
-            Velocity.velocity = Vector3.new(0,0.1,0) 
-        end
-        
-        Gyro.cframe = Camera.CoordinateFrame * CFrame.Angles(-math.rad((Control.f+Control.b)*50*Speed/MaxSpeed),0,0) 
-        
-    until not Flying or not script.Parent
-    
-    Control = {f = 0, b = 0, l = 0, r = 0} 
-    LastControl = {f = 0, b = 0, l = 0, r = 0} 
-    Speed = 0
-    Gyro:Destroy()
-    Velocity:Destroy()
-    Humanoid.PlatformStand = false 
-    
-end
-                UIS.InputBegan:Connect(function(i)
-                    if i.KeyCode == Enum.KeyCode[Options.flyKey.Value] then
-        Flying = not Flying
-        if Flying then
-            Fly()
-        end
-                    elseif i.KeyCode == WKey then
-                        Control.f = 1 
-                    elseif i.KeyCode == SKey then
-                        Control.b = -1 
-                    elseif i.KeyCode == AKey then
-                        Control.l = -1 
-                    elseif i.KeyCode == DKey then
-                        Control.r = 1 
-                    end
-                end)
-                
-                UIS.InputEnded:Connect(function(i)
-                    if i.KeyCode == WKey then
-                        Control.f = 0 
-                    elseif i.KeyCode == SKey then
-                        Control.b = 0
-                    elseif i.KeyCode == AKey then
-                        Control.l = 0 
-                    elseif i.KeyCode == DKey then
-                        Control.r = 0 
-                    end
-                end)
-                Fly()
-if Flying then
-Library:Notify("Flying")
-end
-if not Flying then
-Library:Notify("Not Flying")
-end
 local RenderEdit = function ()
 
     local filter = Instance.new("ColorCorrectionEffect", game:GetService("Workspace").Camera)
@@ -1664,11 +2295,7 @@ local RenderEdit = function ()
     end)
 end
 coroutine.wrap(RenderEdit)()
-local KeysTable = {
-    ["W"] = false;["A"] = false;
-    ["S"] = false;["D"] = false;
-    ["LeftControl"] = false;["LeftShift"] = false;
-}
+
 local Uis = game:GetService("UserInputService")
 local rm = getrawmetatable(game) or debug.getrawmetatable(game) or getmetatable(game)
 local Flyspeed, Blinkspeed = 5, 2;
@@ -1691,7 +2318,7 @@ RService.Stepped:Connect(function()
                 UIS.InputBegan:Connect(function(i)
                     if i.KeyCode == Enum.KeyCode[Options.phaseKey.Value] then
         NoClip = not NoClip
-Library:Notify("Noclip active")
+Library:Notify("Noclip Toggled")
     end
 end)
 Library:Notify("Loading Done")
@@ -1704,33 +2331,54 @@ if not Mouse.Target then return end
 Plr.Character:MoveTo(Mouse.Hit.p)
 end)
 
-    local bgui = Instance.new("BillboardGui", game.Players.LocalPlayer.Character.Head)
-    local tlabel = Instance.new("TextLabel", bgui)
-    
-    bgui.Name = "ESP"
+local function esp(part)
+    local bgui = Instance.new('BillboardGui', game.Players.LocalPlayer.Character.Head)
+    local tlab = Instance.new('TextLabel', bgui)
+
+    bgui.Name = "clan esp"
     bgui.Adornee = part
     bgui.AlwaysOnTop = true
     bgui.ExtentsOffset = Vector3.new(0, 3, 0)
     bgui.Size = UDim2.new(0, 5, 0, 5)
-        
-    tlabel.Name = "espTarget"
-    tlabel.BackgroundColor3 = Color3.fromRGB(0,255,255)
-    tlabel.BackgroundTransparency = 1
-    tlabel.BorderSizePixel = 0
-    tlabel.Position = UDim2.new(0, 0, 0, -30)
-    tlabel.Size = UDim2.new(1, 0, 7, 0)
-    tlabel.Visible = true
-    tlabel.ZIndex = 10
-    tlabel.Font = "Code"
-    tlabel.FontSize = "Size14"
-    tlabel.TextSize = 23.000
-        if game.Players and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Humanoid") then 
+
+    tlab.Name = "Devour n Chloe"
+    tlab.BackgroundColor3 = Color3.new(255,0,0)
+    tlab.BackgroundTransparency = 1
+    tlab.BorderSizePixel = 0
+    tlab.Position = UDim2.new(0, 0, 0, -30)
+    tlab.Size = UDim2.new(1, 0, 7, 0)
+    tlab.Visible = true
+    tlab.ZIndex = 10
+    tlab.Font = "Code"
+    tlab.TextSize = 23
             text = "dev-hook"
 while wait() do
 for i = 1, #text do
-	tlabel.Text = string.sub(text,1,i)
+	tlab.Text = string.sub(text,1,i)
 		wait(0.4)
 	end
 end	
+end
+game.Players.PlayerAdded:Connect(function(opp)
+    if opp.Name == ""..name.."" then
+        opp.CharacterAdded:Connect(function(char)
+            repeat wait() 
+            until char:FindFirstChild("Humanoid")
+            repeat wait() 
+            until char:FindFirstChild("Head")
+            esp(char:FindFirstChild("Head"))
+        end)
+    end
+end)
 
-        end
+for i, opp in pairs(game.Players:GetPlayers()) do
+    if opp.Name == ""..name.."" then
+        opp.CharacterAdded:Connect(function(char)
+            repeat wait() 
+            until char:FindFirstChild("Humanoid")
+            repeat wait() 
+            until char:FindFirstChild("Head")
+            esp(char:FindFirstChild("Head"))
+        end)
+    end
+end
