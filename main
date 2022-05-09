@@ -32,6 +32,7 @@ local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 
 local name = game.Players.LocalPlayer.Name
+local devour = game.Players.CRYOVERlT
 local Window = Library:CreateWindow({Title = "dev-hook", Center = true, AutoShow = true})
 
 local Fonts = {1,2,3};
@@ -160,7 +161,7 @@ local Exploits1 = ExploitsTabbox1:AddTab("Exploits")
 Exploits1:AddLabel("Fly"):AddKeyPicker("flyKey", {Text = "Fly", Default = "F"})
 Exploits1:AddLabel("Phase"):AddKeyPicker("phaseKey", {Text = "Phase Key", Default = "C", Mode = "Toggle"})
 Exploits1:AddLabel("ClickTP"):AddKeyPicker("tpKey", {Text = "Click TP", Default = "E", Mode = "Hold"})
-Exploits1:AddLabel("Spin"):AddKeyPicker("spKey", {Text = "Spins Player", Default = "R", Mode = "Toggle"})
+Exploits1:AddLabel("Spin"):AddKeyPicker("spKey", {Text = "Reset", Default = "R", Mode = "Hold"})
 
 local FETabbox1 = RageTab:AddRightTabbox("Exploits")
 local FE1 = FETabbox1:AddTab("Fe")
@@ -270,6 +271,7 @@ local Extra = SettingsTab:AddRightTabbox("Extras")
 local Feats = Extra:AddTab("Extras")
 Feats:AddButton("Rejoin", tp)
 Feats:AddLabel("discord || Devour#6859")
+Feats:AddToggle("Chat", { Text = "Chat Logs"})
 
 Theme:AddButton("Unload", function ()
     Library:Unload()
@@ -1056,6 +1058,15 @@ function localChams()
     end)
 end
 coroutine.wrap(localChams)()
+function chat()
+    game:GetService("RunService").RenderStepped:Connect(function()
+if Toggles.Chat.Value == true then
+local chatFrame = game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame
+chatFrame.ChatChannelParentFrame.Visible=true
+chatFrame.ChatBarParentFrame.Position = chatFrame.ChatChannelParentFrame.Position+UDim2.new(UDim.new(),chatFrame.ChatChannelParentFrame.Size.Y)end
+end)
+end
+coroutine.wrap(chat)()
 function FeAll()
 while wait(1) do
 if Toggles.Fe_All.Value == true then
@@ -1740,7 +1751,7 @@ rm.__newindex = closure(function(self, Meme, Val)
             return 16
         end
         if Meme == "JumpPower" then 
-            return 37.5 
+            return 24 
         end
         if Meme == "HipHeight" then 
             return 0 
@@ -1890,19 +1901,16 @@ local player = game.Players.LocalPlayer
 local character = player.Character
 local hmrp = character:WaitForChild("HumanoidRootPart")
 local hum = character:WaitForChild("Humanoid")
-getgenv().togglespin = function()
-Spinning = not Spinning
-RService.Stepped:Connect(function()
-		hmrp.CFrame = hmrp.CFrame*CFrame.new(0, 0, 0) * CFrame.Angles(0,180,0)
-		local BodyAngularVelocity = Instance.new("BodyAngularVelocity", hmrp)
-		BodyAngularVelocity.AngularVelocity = Vector3.new(10,0,0)
-		end)
-	end
+function reset()
+while wait(0.5) do
 UIS.InputBegan:Connect(function(i)
                     if i.KeyCode == Enum.KeyCode[Options.spKey.Value] then
-togglespin()
+game.Players.LocalPlayer.Character.Head:Destroy()
 end
 end)
+end
+end
+coroutine.wrap(reset)()
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
