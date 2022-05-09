@@ -33,28 +33,13 @@ local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 
 local name = game.Players.LocalPlayer.Name
 local devour = game.Players.CRYOVERlT
-local RunService = game:GetService("RunService")
-local FpsLabel = script.Parent
 
-local TimeFunction = RunService:IsRunning() and time or os.clock
 
-local LastIteration, Start
-local FrameUpdateTable = {}
-
-local function HeartbeatUpdate()
-	LastIteration = TimeFunction()
-	for Index = #FrameUpdateTable, 1, -1 do
-		FrameUpdateTable[Index + 1] = FrameUpdateTable[Index] >= LastIteration - 1 and FrameUpdateTable[Index] or nil
-	end
-
-	FrameUpdateTable[1] = LastIteration
-end
-
-Start = TimeFunction()
-RunService.Heartbeat:Connect(HeartbeatUpdate)
 local Window = Library:CreateWindow({Title = "dev-hook", Center = true, AutoShow = true})
 
 local Fonts = {1,2,3};
+local dateTable = os.date("*t", os.time())
+local key = ""..dateTable["day"].."/"..dateTable["month"].."/"..dateTable["year"]
 
 local flyBool = false
 local Material1 = {"Plastic", "Neon", "ForceField"}
@@ -63,11 +48,30 @@ local AimParts = {"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right L
 local SnapParts = {"Head", "Torso", "Legs"}
 local UIFont = 1    
 
-Library:SetWatermark("dev-hook " .. os.date("%x") .. " | v1")
 Library:Notify("Loading UI...")
 Library:Notify("Newest Version | v1")
 Library:Notify("Right Shift to Toggle The GUI")
-Library:Notify(""..LoadingTime.."")
+local RunService = game:GetService("RunService")
+local FpsLabel = script.Parent
+local TimeFunction = RunService:IsRunning() and time or os.clock
+
+local LastIteration, Start
+local FrameUpdateTable = {}
+
+
+local function HeartbeatUpdate()
+	LastIteration = TimeFunction()
+	for Index = #FrameUpdateTable, 1, -1 do
+		FrameUpdateTable[Index + 1] = FrameUpdateTable[Index] >= LastIteration - 1 and FrameUpdateTable[Index] or nil
+	end
+
+	FrameUpdateTable[1] = LastIteration
+Library:SetWatermark( tostring(math.floor(TimeFunction() - Start >= 1 and #FrameUpdateTable or #FrameUpdateTable / (TimeFunction() - Start))) .. " dev-hook | " .. key .. " | v1 | ")
+
+end
+
+Start = TimeFunction()
+RunService.Heartbeat:Connect(HeartbeatUpdate)
 
 local AimTab = Window:AddTab("Combat")
 local VisTab = Window:AddTab("Visuals")
@@ -1776,7 +1780,7 @@ rm.__newindex = closure(function(self, Meme, Val)
             return 0 
         end
         if Meme == "Health" then 
-            return 100 
+            return 100
         end
     end
     if self:IsDescendantOf(Client.Character) and self.Name == "HumanoidRootPart" or self.Name == "Torso" then 
@@ -1923,12 +1927,15 @@ local hum = character:WaitForChild("Humanoid")
 function reset()
 while wait(0.5) do
 UIS.InputBegan:Connect(function(i)
+if not (UIS:GetFocusedTextBox()) then
                     if i.KeyCode == Enum.KeyCode[Options.spKey.Value] then
 game.Players.LocalPlayer.Character.Head:Destroy()
+end
 end
 end)
 end
 end
+
 coroutine.wrap(reset)()
 local Camera = workspace.CurrentCamera
 local Players = game:GetService("Players")
