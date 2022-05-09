@@ -180,7 +180,7 @@ local Exploits1 = ExploitsTabbox1:AddTab("Exploits")
 Exploits1:AddLabel("Fly"):AddKeyPicker("flyKey", {Text = "Fly", Default = "F"})
 Exploits1:AddLabel("Phase"):AddKeyPicker("phaseKey", {Text = "Phase Key", Default = "C", Mode = "Toggle"})
 Exploits1:AddLabel("ClickTP"):AddKeyPicker("tpKey", {Text = "Click TP", Default = "E", Mode = "Hold"})
-Exploits1:AddLabel("Spin"):AddKeyPicker("spKey", {Text = "Reset", Default = "R", Mode = "Hold"})
+Exploits1:AddLabel("Reset"):AddKeyPicker("spKey", {Text = "Reset", Default = "R", Mode = "Hold"})
 
 local FETabbox1 = RageTab:AddRightTabbox("Exploits")
 local FE1 = FETabbox1:AddTab("Fe")
