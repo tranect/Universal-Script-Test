@@ -23,10 +23,6 @@ local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
 local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
 local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
 
-local name = game.Players.LocalPlayer.Name
-local devour = game.Players.CRYOVERlT
-
-
 local Window = Library:CreateWindow({Title = "dev-hook", Center = true, AutoShow = true})
 
 local Fonts = {1,2,3};
@@ -40,8 +36,23 @@ local AimParts = {"Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right L
 local SnapParts = {"Head", "Torso", "Legs"}
 local UIFont = 1    
 
+local playas = {}
+
+ for i,v in pairs(game.Players:GetChildren()) do
+table.insert(playas, v.Name)
+    end
+ for i,v in pairs(game.Players:GetChildren()) do
+game.Players.PlayerAdded:Connect(function(v)
+	table.insert(playas, v.Name)
+end)
+end
+ for i,v in pairs(game.Players:GetChildren()) do
+game.Players.PlayerRemoving:Connect(function(v)
+	table.insert(playas, v.Name)
+end)
+end
+
 Library:Notify("Loading UI...")
-Library:Notify("Newest Version | v1")
 Library:Notify("Right Shift to Toggle The GUI")
 local RunService = game:GetService("RunService")
 local FpsLabel = script.Parent
@@ -58,7 +69,7 @@ local function HeartbeatUpdate()
 	end
 
 	FrameUpdateTable[1] = LastIteration
-Library:SetWatermark( tostring(math.floor(TimeFunction() - Start >= 1 and #FrameUpdateTable or #FrameUpdateTable / (TimeFunction() - Start))) .. " dev-hook | " .. key .. " | v1 | ")
+Library:SetWatermark( tostring(math.floor(TimeFunction() - Start >= 1 and #FrameUpdateTable or #FrameUpdateTable / (TimeFunction() - Start))) .. " dev-hook | " .. key .. "")
 
 end
 
@@ -75,6 +86,10 @@ local Aim1 = AimbotTabbox1:AddTab("Aimbot")
 Aim1:AddToggle("aim_enabled", {Text = "Enable"}):AddKeyPicker("aim_key", {Text = "Aimbot", Default = "X", Mode = "Hold"})
 Aim1:AddSlider("aimbot_distance", {Text = "Aimbot Distance", Default = 500, Min = 50, Max = 500, Rounding = 0})
 Aim1:AddDropdown("aim_part", {Text = "Aim Part", Default = 1, Values = AimParts})
+
+local AimbotTabbox2 = AimTab:AddRightTabbox("Target")
+local Aim2 = AimbotTabbox2:AddTab("Target")
+Aim2:AddDropdown("players", {Text = "Players", Default = 1, Values = playas})
 
 local AimbotTabbox2 = AimTab:AddLeftTabbox("Silent Aim")
 do
@@ -291,19 +306,13 @@ Feats:AddToggle("Chat", { Text = "Chat Logs"})
 
 local Extra1 = SettingsTab:AddLeftTabbox("Update Log:")
 local Feats1 = Extra1:AddTab("Update Log: ")
-Feats1:AddLabel("                                                                                                                                                                                                                                                                                                          ")
-
-local Extra2 = SettingsTab:AddRightTabbox("PlayerList")
-local Feats2 = Extra2:AddTab("PlayerList")
-
+Feats1:AddLabel("     Added CMD Bar :)                                                                                                                                                                                                                                                                                                     ")
 
 Theme:AddButton("Unload", function ()
     Library:Unload()
 end)
 
 Library:Notify("Loaded UI");
-
-
 
 -- Features below
 
@@ -325,10 +334,6 @@ local LegOff = Vector3.new(0,4.7,0)
 local HeadOff2 = Vector3.new(0, 5.6, 0)
 local SnapLeg = Vector3.new(0, 3.2, 0)
 local HealthOff = Vector3.new(-6,0,0)
-local currentGun = "M4A1"
-local CurrentMap = "Gas Station"
-local InGame = false
-local DeathLoop = false
 
 -- Box ESP
 local BoxESP = function ()
@@ -1129,13 +1134,11 @@ elseif strl == "me" then
    end
    return Found    
 end
-local LP = game.Players.LocalPlayer
 local Char,Pack = LP.Character,LP.Backpack
 local HRP,Hum = Char.HumanoidRootPart,Char.Humanoid
 local LS = LP.PlayerGui:FindFirstChild("LocalScript")
 local plrs = game:GetService("Players")
 local OHRP = plrs:GetChildren()
-local FETO = plrs:FindFirstChildWhichIsA("Part")
 if LS then LS:Destroy() end
 
 for i = 1, #OHRP do
@@ -1968,10 +1971,6 @@ end
 end
 coroutine.wrap(destroyChams)()
 local UIS = game:GetService("UserInputService")
-local player = game.Players.LocalPlayer
-local character = player.Character
-local hmrp = character:WaitForChild("HumanoidRootPart")
-local hum = character:WaitForChild("Humanoid")
 function reset()
 while wait(0.5) do
 UIS.InputBegan:Connect(function(i)
@@ -2380,12 +2379,10 @@ coroutine.wrap(RenderEdit)()
 
 local Uis = game:GetService("UserInputService")
 local rm = getrawmetatable(game) or debug.getrawmetatable(game) or getmetatable(game)
-local Flyspeed, Blinkspeed = 5, 2;
 
 local Players, RService, RStorage, VUser, SGui, TPService = game:GetService("Players"), game:GetService("RunService"), game:GetService("ReplicatedStorage"), game:GetService("VirtualUser"), game:GetService("StarterGui"), game:GetService("TeleportService")
-local Client, Mouse, Camera, CF, INew, Vec3, Vec2, UD2, UD = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Instance.new, Vector3.new, Vector2.new, UDim2.new, UDim.new;
 if setreadonly then setreadonly(rm, true) else make_writeable(rm, false) end
-local Flying, NoClip = false,false
+local NoClip = false
 
 RService.Stepped:Connect(function()
     if NoClip == true and LocalP and LocalP.Character and LocalP.Character:FindFirstChild("Humanoid") then  -- fuck errors
@@ -2442,6 +2439,7 @@ for i = 1, #text do
 	end
 end	
 end
+local name = game.Players.LocalPlayer.Name
 game.Players.PlayerAdded:Connect(function(opp)
     if opp.Name == ""..name.."" then
         opp.CharacterAdded:Connect(function(char)
@@ -2465,15 +2463,199 @@ for i, opp in pairs(game.Players:GetPlayers()) do
         end)
     end
 end
-function playerget()
-    for i,v in pairs(game.Players:GetChildren()) do
-Feats2:AddLabel(v.Name)
+getgenv().SearchPlayers = function(Name)
+    local Inserted = {}
+        for _, v in pairs(game:GetService("Players"):GetPlayers()) do 
+        if string.lower(string.sub(v.Name, 1, string.len(Name))) == string.lower(Name) then 
+            table.insert(Inserted, v);return v
+        end
     end
 end
-playerget()
-game.Players.PlayerAdded:Connect(function(v)
-	playerget()
+getgenv().GetPlayer = function(String)
+   local Found = {}
+   local strl = String:lower()
+   if strl == "all" then
+       for i,v in pairs(game.Players:GetPlayers()) do
+           table.insert(Found,v.Name)
+       end
+   elseif strl == "others" then
+       for i,v in pairs(game.Players:GetPlayers()) do
+           if v.Name ~= game.Players.LocalPlayer.Name then
+               table.insert(Found,v.Name)
+           end
+       end   
+elseif strl == "me" then
+       for i,v in pairs(game.Players:GetPlayers()) do
+           if v.Name == game.Players.LocalPlayer.Name then
+               table.insert(Found,v.Name)
+           end
+       end  
+   else
+       for i,v in pairs(game.Players:GetPlayers()) do
+           if v.Name:lower():sub(1, #String) == String:lower() then
+               table.insert(Found,v.Name)
+           end
+       end    
+   end
+   return Found    
+end
+local ScreenGui = Instance.new("ScreenGui")
+local CBar = Instance.new("TextBox", ScreenGui)
+
+coroutine.resume(coroutine.create(function()
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.ResetOnSpawn = false
+
+CBar.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+CBar.BorderSizePixel = 1
+CBar.Position = UDim2.new(0, 0, 0.633333333333, 0)
+CBar.Size = UDim2.new(0, 0, 0, 20)
+CBar.Visible = false
+CBar.Font = Enum.Font.Code
+CBar.PlaceholderColor3 = Color3.fromRGB(255, 255, 255)
+CBar.Text = ""
+CBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+CBar.TextSize = 15
+CBar.TextStrokeColor3 = Color3.fromRGB(255, 255, 255)
+
+local Frame = Instance.new("Frame", ScreenGui)
+Frame.BackgroundTransparency = 1
+Frame.Position = UDim2.new(0.005, 0, 0, 0)
+Frame.Size = UDim2.new(0, 91, 0, 100)
+
+local UIListLayout = Instance.new("UIListLayout", Frame)
+UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+end))
+local Uis = game:GetService("UserInputService")
+Uis.InputBegan:Connect(function(Key, Typing)
+   if Typing then return end
+       if Key.KeyCode.Name == "Semicolon" then 
+       CBar.Visible = true
+       CBar.Text = ""
+       wait()
+       CBar:CaptureFocus()
+       CBar:TweenSize(UDim2.new(0, 419, 0, 20), "Out", "Quad", 0.1, true)
+   end
 end)
-game.Players.PlayerRemoving:Connect(function(v)
-	playerget()
+CBar.FocusLost:Connect(function(Foc)
+   if Foc == true then
+       CBar:TweenSize(UDim2.new(0, 0, 0, 20), "Out", "Quad", 0.1, true)
+       wait()
+       CBar.Visible = false
+       RunCommand(CBar.Text)
+   end
 end)
+Uis.InputEnded:Connect(function(Key)
+   if Key.KeyCode.Name == "LeftAlt" then
+       CBar.Visible = false -- Dont mind this
+   end
+end)
+local executed = true
+
+if executed == true then 
+local name = game.Players.LocalPlayer.Name
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = "DevPanel";
+        Text = ""..name.." Has Executed The Script";
+        Icon = Icon;
+    }) 
+end
+    local LoadingTime = tick();
+local Commands, Prefix = {}, ""
+getgenv().Notify = function(title, text, icon, time)
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = title;
+        Text = text;
+        Icon = "rbxassetid://2541869220";
+        Duration = time;
+    }) 
+end
+            getgenv().RunCommand = function(Cmd)
+                Cmd = string.lower(Cmd)
+                pcall(function()
+                    if Cmd:sub(1, #Prefix) == Prefix then 
+                        local Args = string.split(Cmd:sub(#Prefix + 1), " ")
+                        local CmdName = GetInit(table.remove(Args, 1))
+                        if CmdName and Args then
+                            return CmdName(Args)
+                        end
+                    end
+                end)
+            end
+                    
+getgenv().GetInit = function(CName)
+    for _, v in next, Commands do 
+        if v.Name == CName or table.find(v.Aliases, CName) then 
+            return v.Function 
+        end 
+    end
+end
+
+
+--///////////////////////////////////////////
+local Players, RService, RStorage, VUser, SGui, TPService = game:GetService("Players"), game:GetService("RunService"), game:GetService("ReplicatedStorage"), game:GetService("VirtualUser"), game:GetService("StarterGui"), game:GetService("TeleportService")
+local Client, Mouse, Camera, CF, INew, Vec3, Vec2, UD2, UD = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Instance.new, Vector3.new, Vector2.new, UDim2.new, UDim.new;
+local Viewing, Follow = false, false;
+local FollowTarget, ViewTarget  =  nil, nil;
+
+
+--/commands
+
+Commands["View a Player"] = {
+    ["Aliases"] = {"view", "spy"};
+    ["Function"] = function(Args)
+        if Args[1] then 
+            ViewTarget = SearchPlayers(Args[1]);Viewing = true 
+        end
+    end
+}
+Commands["UnView Viewed Target"] = {
+    ["Aliases"] = {"unview", "unspy"};
+    ["Function"] = function()
+        ViewTarget = nil;Viewing = false
+        Camera.CameraSubject = Client.Character
+    end
+}
+
+Commands["Follow Player"] = {
+    ["Aliases"] = {"follow", "fw"};
+    ["Function"] = function(Args)
+        if Args[1] then 
+            FollowTarget = SearchPlayers(Args[1]);Follow = true
+        end
+    end
+}
+Commands[" Stops Following Player"] = {
+    ["Aliases"] = {"unfollow", "unfw"};
+    ["Function"] = function(Args)
+        if Args[1] then 
+            FollowTarget = nil;Follow = false
+        end
+    end
+}
+RService.Stepped:Connect(function()
+    if Viewing == true and ViewTarget ~= nil then 
+        game.Workspace.CurrentCamera.CameraSubject = ViewTarget.Character
+    end
+    if Follow == true and FollowTarget and FollowTarget.Character and FollowTarget.Character:FindFirstChild("Torso") then
+    local hrp = game.Players.LocalPlayer.Character.HumanoidRootPart
+      while wait() do
+        hrp.CFrame = FollowTarget.Character.Torso.CFrame
+    end
+end
+end)
+
+--THIS HAS TO BE AT BOTTOM--
+
+local TweenService = game:GetService('TweenService')
+local object = CBar
+local tweenInfo = TweenInfo.new(2.5)
+
+while true do
+local r, g, b = math.random(), math.random(), math.random()
+local goal = {BorderColor3 = Color3.new(r, g, b)}
+
+local tween = TweenService:Create(object, tweenInfo, goal)
+tween:Play()
+tween.Completed:Wait()
+end
